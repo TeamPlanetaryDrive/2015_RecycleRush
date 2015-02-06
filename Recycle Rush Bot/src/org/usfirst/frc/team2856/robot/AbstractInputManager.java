@@ -2,6 +2,7 @@ package org.usfirst.frc.team2856.robot;
 
 import java.util.LinkedList;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -36,11 +37,13 @@ public abstract class AbstractInputManager {
 			
 	private    Joystick[] joysticks;
 	private       boolean newButton;
-	private        double newAxis;
+	private        double newAxis, newAxis2, newAxis3;
 	private           int newPOV;
 	
 	private TreeMap<JoyAddr, LinkedList<ValueHandler<Boolean>>> buttonMap;
 	private TreeMap<JoyAddr, LinkedList<ValueHandler<Double>>>  axisMap;
+	private TreeMap<DualJoyAddr, LinkedList<BiAxisHandler>> biAxisMap;
+	private TreeMap<TriJoyAddr, LinkedList<TriAxisHandler>> triAxisMap;
 	private TreeMap<JoyAddr, LinkedList<ValueHandler<Integer>>> povMap;
 	
 	public AbstractInputManager(Joystick... jsticks) {
@@ -48,12 +51,14 @@ public abstract class AbstractInputManager {
 		
 		buttonMap = new TreeMap<>();
 		axisMap = new TreeMap<>();
+		biAxisMap = new TreeMap<>();
+		triAxisMap = new TreeMap<>();
 		povMap = new TreeMap<>();
 	}
 	
 	public void update() {
 		for(JoyAddr pair: buttonMap.keySet()) {
-			newButton = joysticks[pair.ijoy].getRawButton(pair.ivalue);
+			newButton = joysticks[pair.ijoy].getRawButton(pair.ival);
 			buttonMap.get(pair).forEach(handler -> {
 				if(!handler.curr.equals(newButton)) {
 					handler.curr = newButton;
@@ -63,7 +68,7 @@ public abstract class AbstractInputManager {
 		}
 		
 		for(JoyAddr pair: axisMap.keySet()) {
-			newAxis = joysticks[pair.ijoy].getRawAxis(pair.ivalue);
+			newAxis = joysticks[pair.ijoy].getRawAxis(pair.ival);
 			axisMap.get(pair).forEach(handler -> {
 				if(!handler.curr.equals(newAxis)) {
 					handler.curr = newAxis;
@@ -72,8 +77,39 @@ public abstract class AbstractInputManager {
 			});
 		}
 		
+		for(DualJoyAddr addr: biAxisMap.keySet()) {
+			newAxis = joysticks[addr.ijoy].getRawAxis(addr.ival1);
+			newAxis2 = joysticks[addr.ijoy].getRawAxis(addr.ival2);
+			biAxisMap.get(addr).forEach(handler -> {
+				if(handler.axis1 != newAxis
+						|| handler.axis2 != newAxis2) {
+					handler.axis1 = newAxis;
+					handler.axis2 = newAxis2;
+					handler.handler.accept(handler.axis1, handler.axis2);
+				}
+			});
+		}
+		
+		for(TriJoyAddr addr: triAxisMap.keySet()) {
+			newAxis = joysticks[addr.ijoy].getRawAxis(addr.ival1);
+			newAxis2 = joysticks[addr.ijoy].getRawAxis(addr.ival2);
+			newAxis3 = joysticks[addr.ijoy].getRawAxis(addr.ival3);
+			
+			triAxisMap.get(addr).forEach(handler -> {
+				if(handler.axis1 != newAxis
+						|| handler.axis2 != newAxis2
+						|| handler.axis3 != newAxis3) {
+					handler.axis1 = newAxis;
+					handler.axis2 = newAxis2;
+					handler.axis3 = newAxis3;
+					handler.handler.accept(handler.axis1, handler.axis2,
+							handler.axis3);
+				}
+			});
+		}
+		
 		for(JoyAddr pair: povMap.keySet()) {
-			newPOV = joysticks[pair.ijoy].getPOV(pair.ivalue);
+			newPOV = joysticks[pair.ijoy].getPOV(pair.ival);
 			povMap.get(pair).forEach(handler -> {
 				if(!handler.curr.equals(newPOV)) {
 					handler.curr = newPOV;
@@ -129,6 +165,57 @@ public abstract class AbstractInputManager {
 				});
 	}
 	
+	public void addBiAxisAction(int joystick,
+			int axis1, int axis2, BiConsumer<Double, Double> handler) {
+		LinkedList<BiAxisHandler> list = new LinkedList<>();
+		list.addFirst(new BiAxisHandler(
+				joysticks[joystick].getRawAxis(axis1),
+				joysticks[joystick].getRawAxis(axis2), handler));
+		biAxisMap.merge(new DualJoyAddr(joystick, axis1, axis2), list,
+				(v0, v1) -> {
+					v0.addFirst(v1.getFirst());
+					return v0;
+				});
+	}
+	
+	public void removeBiAxisAction(int joystick,
+			int axis1, int axis2, BiConsumer<Double, Double> handler) {
+		LinkedList<BiAxisHandler> list = new LinkedList<>();
+		list.addFirst(new BiAxisHandler(0.0, 0.0, handler));
+		biAxisMap.merge(new DualJoyAddr(joystick, axis1, axis2), list,
+				(v0, v1) -> {
+					v0.remove(v1.getFirst());
+					return v0.isEmpty() ? null : v0;
+				});
+	}
+	
+	public void addTriAxisAction(int joystick,
+			int axis1, int axis2, int axis3,
+			TriConsumer<Double, Double, Double> handler) {
+		LinkedList<TriAxisHandler> list = new LinkedList<>();
+		list.addFirst(new TriAxisHandler(
+				joysticks[joystick].getRawAxis(axis1),
+				joysticks[joystick].getRawAxis(axis2),
+				joysticks[joystick].getRawAxis(axis3), handler));
+		triAxisMap.merge(new TriJoyAddr(joystick, axis1, axis2, axis3), list,
+				(v0, v1) -> {
+					v0.addFirst(v1.getFirst());
+					return v0;
+				});
+	}
+	
+	public void removeTriAxisAction(int joystick,
+			int axis1, int axis2, int axis3,
+			TriConsumer<Double, Double, Double> handler) {
+		LinkedList<TriAxisHandler> list = new LinkedList<>();
+		list.addFirst(new TriAxisHandler(0.0, 0.0, 0.0, handler));
+		triAxisMap.merge(new TriJoyAddr(joystick, axis1, axis2, axis3), list,
+				(v0, v1) -> {
+					v0.remove(v1.getFirst());
+					return v0.isEmpty() ? null : v0;
+				});
+	}
+	
 	public void addPOVAction(int joystick,
 			int pov, Consumer<Integer> handler) {
 		LinkedList<ValueHandler<Integer>> list = new LinkedList<>();
@@ -155,18 +242,18 @@ public abstract class AbstractInputManager {
 	private static class JoyAddr implements Comparable<JoyAddr> {
 		
 		public final int ijoy;
-		public final int ivalue;
+		public final int ival;
 		
 		public JoyAddr(int ijoy, int ivalue) {
 			this.ijoy = ijoy;
-			this.ivalue = ivalue;
+			this.ival = ivalue;
 		}
 		
 		@Override
 		public int compareTo(JoyAddr o) {
 			return o == null ? 1
-				 : ijoy   != o.ijoy   ? (ijoy   > o.ijoy   ? 1 : -1)
-				 : ivalue != o.ivalue ? (ivalue > o.ivalue ? 1 : -1)
+				 : ijoy != o.ijoy ? (ijoy > o.ijoy ? 1 : -1)
+				 : ival != o.ival ? (ival > o.ival ? 1 : -1)
 				 : 0;
 		}
 		
@@ -174,6 +261,67 @@ public abstract class AbstractInputManager {
 		public boolean equals(Object o) {
 			return (o != null) && (o instanceof JoyAddr)
 					&& (compareTo((JoyAddr) o) == 0);
+		}
+		
+	}
+	
+	private static class DualJoyAddr implements Comparable<DualJoyAddr> {
+
+		public final int ijoy;
+		public final int ival1;
+		public final int ival2;
+		
+		public DualJoyAddr(int ijoy, int ival1, int ival2) {
+			this.ijoy = ijoy;
+			this.ival1 = ival1;
+			this.ival2 = ival2;
+		}
+		
+		@Override
+		public int compareTo(DualJoyAddr o) {
+			return o == null ? 1
+				 : ijoy  != o.ijoy  ? (ijoy  > o.ijoy  ? 1 : -1)
+				 : ival1 != o.ival1 ? (ival1 > o.ival1 ? 1 : -1)
+				 : ival2 != o.ival2 ? (ival2 > o.ival2 ? 1 : -1)
+				 : 0;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			return (o != null) && (o instanceof DualJoyAddr)
+					&& (compareTo((DualJoyAddr) o) == 0);
+		}
+		
+	}
+	
+	private static class TriJoyAddr implements Comparable<TriJoyAddr> {
+
+		public final int ijoy;
+		public final int ival1;
+		public final int ival2;
+		public final int ival3;
+		
+		public TriJoyAddr(int ijoy, int ival1, int ival2, int ival3) {
+			this.ijoy = ijoy;
+			this.ival1 = ival1;
+			this.ival2 = ival2;
+			this.ival3 = ival3;
+		}
+		
+		@Override
+		public int compareTo(TriJoyAddr o) {
+			return o == null ? 1
+				 : ijoy  != o.ijoy  ? (ijoy  > o.ijoy  ? 1 : -1)
+				 : ival1 != o.ival1 ? (ival1 > o.ival1 ? 1 : -1)
+				 : ival2 != o.ival2 ? (ival2 > o.ival2 ? 1 : -1)
+				 : ival3 != o.ival3 ? (ival3 > o.ival3 ? 1 : -1)
+				 : 0;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			return (o != null) && (o instanceof TriJoyAddr)
+					&& (compareTo((TriJoyAddr) o) == 0);
 		}
 		
 	}
@@ -195,6 +343,68 @@ public abstract class AbstractInputManager {
 			}
 			
 			return (handler == ((ValueHandler<?>)o).handler);
+		}
+		
+	}
+	
+	private static class BiAxisHandler {
+		
+		public double axis1, axis2;
+		public final BiConsumer<Double, Double> handler;
+		
+		public BiAxisHandler(double axis1, double axis2,
+				BiConsumer<Double, Double> handler) {
+			this.axis1 = axis1;
+			this.axis2 = axis2;
+			this.handler = handler;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if(o == null || !(o instanceof BiAxisHandler)) {
+				return false;
+			}
+			
+			return (handler == ((BiAxisHandler)o).handler);
+		}
+		
+	}
+	
+	private static class TriAxisHandler {
+		
+		public double axis1, axis2, axis3;
+		public final TriConsumer<Double, Double, Double> handler;
+		
+		public TriAxisHandler(double axis1, double axis2, double axis3,
+				TriConsumer<Double, Double, Double> handler) {
+			this.axis1 = axis1;
+			this.axis2 = axis2;
+			this.axis3 = axis3;
+			this.handler = handler;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if(o == null || !(o instanceof TriAxisHandler)) {
+				return false;
+			}
+			
+			return (handler == ((TriAxisHandler)o).handler);
+		}
+		
+	}
+	
+	@FunctionalInterface
+	private static interface TriConsumer<T, U, V> {
+		
+		void accept(T t, U u, V v);
+		
+		default TriConsumer<T, U, V> andThen(
+				TriConsumer<? super T, ? super U, ? super V> after) {
+			return (t_, u_, v_) -> {
+				accept(t_, u_, v_);
+				after.accept(t_, u_, v_);
+			};
 		}
 		
 	}
