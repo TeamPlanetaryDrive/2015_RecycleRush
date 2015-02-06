@@ -78,8 +78,8 @@ public abstract class AbstractInputManager {
 		}
 		
 		for(DualJoyAddr addr: biAxisMap.keySet()) {
-			newAxis = joysticks[addr.ijoy].getRawAxis(addr.ival1);
-			newAxis2 = joysticks[addr.ijoy].getRawAxis(addr.ival2);
+			newAxis = joysticks[addr.addr1.ijoy].getRawAxis(addr.addr1.ival);
+			newAxis2 = joysticks[addr.addr2.ijoy].getRawAxis(addr.addr2.ival);
 			biAxisMap.get(addr).forEach(handler -> {
 				if(handler.axis1 != newAxis
 						|| handler.axis2 != newAxis2) {
@@ -91,9 +91,9 @@ public abstract class AbstractInputManager {
 		}
 		
 		for(TriJoyAddr addr: triAxisMap.keySet()) {
-			newAxis = joysticks[addr.ijoy].getRawAxis(addr.ival1);
-			newAxis2 = joysticks[addr.ijoy].getRawAxis(addr.ival2);
-			newAxis3 = joysticks[addr.ijoy].getRawAxis(addr.ival3);
+			newAxis = joysticks[addr.addr1.ijoy].getRawAxis(addr.addr1.ival);
+			newAxis2 = joysticks[addr.addr2.ijoy].getRawAxis(addr.addr2.ival);
+			newAxis3 = joysticks[addr.addr3.ijoy].getRawAxis(addr.addr3.ival);
 			
 			triAxisMap.get(addr).forEach(handler -> {
 				if(handler.axis1 != newAxis
@@ -165,51 +165,57 @@ public abstract class AbstractInputManager {
 				});
 	}
 	
-	public void addBiAxisAction(int joystick,
-			int axis1, int axis2, BiConsumer<Double, Double> handler) {
+	public void addBiAxisAction(int joystick1, int axis1,
+			int joystick2, int axis2, BiConsumer<Double, Double> handler) {
 		LinkedList<BiAxisHandler> list = new LinkedList<>();
 		list.addFirst(new BiAxisHandler(
-				joysticks[joystick].getRawAxis(axis1),
-				joysticks[joystick].getRawAxis(axis2), handler));
-		biAxisMap.merge(new DualJoyAddr(joystick, axis1, axis2), list,
+				joysticks[joystick1].getRawAxis(axis1),
+				joysticks[joystick2].getRawAxis(axis2), handler));
+		biAxisMap.merge(new DualJoyAddr(new JoyAddr(joystick1, axis1),
+										new JoyAddr(joystick2, axis2)), list,
 				(v0, v1) -> {
 					v0.addFirst(v1.getFirst());
 					return v0;
 				});
 	}
 	
-	public void removeBiAxisAction(int joystick,
-			int axis1, int axis2, BiConsumer<Double, Double> handler) {
+	public void removeBiAxisAction(int joystick1, int axis1,
+			int joystick2, int axis2, BiConsumer<Double, Double> handler) {
 		LinkedList<BiAxisHandler> list = new LinkedList<>();
 		list.addFirst(new BiAxisHandler(0.0, 0.0, handler));
-		biAxisMap.merge(new DualJoyAddr(joystick, axis1, axis2), list,
+		biAxisMap.merge(new DualJoyAddr(new JoyAddr(joystick1, axis1),
+										new JoyAddr(joystick2, axis2)), list,
 				(v0, v1) -> {
 					v0.remove(v1.getFirst());
 					return v0.isEmpty() ? null : v0;
 				});
 	}
 	
-	public void addTriAxisAction(int joystick,
-			int axis1, int axis2, int axis3,
+	public void addTriAxisAction(int joystick1, int axis1,
+			int joystick2, int axis2, int joystick3, int axis3,
 			TriConsumer<Double, Double, Double> handler) {
 		LinkedList<TriAxisHandler> list = new LinkedList<>();
 		list.addFirst(new TriAxisHandler(
-				joysticks[joystick].getRawAxis(axis1),
-				joysticks[joystick].getRawAxis(axis2),
-				joysticks[joystick].getRawAxis(axis3), handler));
-		triAxisMap.merge(new TriJoyAddr(joystick, axis1, axis2, axis3), list,
+				joysticks[joystick1].getRawAxis(axis1),
+				joysticks[joystick2].getRawAxis(axis2),
+				joysticks[joystick3].getRawAxis(axis3), handler));
+		triAxisMap.merge(new TriJoyAddr(new JoyAddr(joystick1, axis1),
+										new JoyAddr(joystick2, axis2),
+										new JoyAddr(joystick3, axis3)), list,
 				(v0, v1) -> {
 					v0.addFirst(v1.getFirst());
 					return v0;
 				});
 	}
 	
-	public void removeTriAxisAction(int joystick,
-			int axis1, int axis2, int axis3,
+	public void removeTriAxisAction(int joystick1, int axis1,
+			int joystick2, int axis2, int joystick3, int axis3,
 			TriConsumer<Double, Double, Double> handler) {
 		LinkedList<TriAxisHandler> list = new LinkedList<>();
 		list.addFirst(new TriAxisHandler(0.0, 0.0, 0.0, handler));
-		triAxisMap.merge(new TriJoyAddr(joystick, axis1, axis2, axis3), list,
+		triAxisMap.merge(new TriJoyAddr(new JoyAddr(joystick1, axis1),
+										new JoyAddr(joystick2, axis2),
+										new JoyAddr(joystick3, axis3)), list,
 				(v0, v1) -> {
 					v0.remove(v1.getFirst());
 					return v0.isEmpty() ? null : v0;
@@ -267,22 +273,18 @@ public abstract class AbstractInputManager {
 	
 	private static class DualJoyAddr implements Comparable<DualJoyAddr> {
 
-		public final int ijoy;
-		public final int ival1;
-		public final int ival2;
+		public final JoyAddr addr1, addr2;
 		
-		public DualJoyAddr(int ijoy, int ival1, int ival2) {
-			this.ijoy = ijoy;
-			this.ival1 = ival1;
-			this.ival2 = ival2;
+		public DualJoyAddr(JoyAddr addr1, JoyAddr addr2) {
+			this.addr1 = addr1;
+			this.addr2 = addr2;
 		}
 		
 		@Override
 		public int compareTo(DualJoyAddr o) {
 			return o == null ? 1
-				 : ijoy  != o.ijoy  ? (ijoy  > o.ijoy  ? 1 : -1)
-				 : ival1 != o.ival1 ? (ival1 > o.ival1 ? 1 : -1)
-				 : ival2 != o.ival2 ? (ival2 > o.ival2 ? 1 : -1)
+				 : !addr1.equals(o.addr1) ? (addr1.compareTo(o.addr1))
+				 : !addr2.equals(o.addr2) ? (addr2.compareTo(o.addr2))
 				 : 0;
 		}
 		
@@ -296,25 +298,20 @@ public abstract class AbstractInputManager {
 	
 	private static class TriJoyAddr implements Comparable<TriJoyAddr> {
 
-		public final int ijoy;
-		public final int ival1;
-		public final int ival2;
-		public final int ival3;
+		public final JoyAddr addr1, addr2, addr3;
 		
-		public TriJoyAddr(int ijoy, int ival1, int ival2, int ival3) {
-			this.ijoy = ijoy;
-			this.ival1 = ival1;
-			this.ival2 = ival2;
-			this.ival3 = ival3;
+		public TriJoyAddr(JoyAddr addr1, JoyAddr addr2, JoyAddr addr3) {
+			this.addr1 = addr1;
+			this.addr2 = addr2;
+			this.addr3 = addr3;
 		}
 		
 		@Override
 		public int compareTo(TriJoyAddr o) {
 			return o == null ? 1
-				 : ijoy  != o.ijoy  ? (ijoy  > o.ijoy  ? 1 : -1)
-				 : ival1 != o.ival1 ? (ival1 > o.ival1 ? 1 : -1)
-				 : ival2 != o.ival2 ? (ival2 > o.ival2 ? 1 : -1)
-				 : ival3 != o.ival3 ? (ival3 > o.ival3 ? 1 : -1)
+				 : !addr1.equals(o.addr1) ? (addr1.compareTo(o.addr1))
+				 : !addr2.equals(o.addr2) ? (addr2.compareTo(o.addr2))
+				 : !addr3.equals(o.addr3) ? (addr3.compareTo(o.addr3))
 				 : 0;
 		}
 		
