@@ -60,7 +60,7 @@ public abstract class AbstractInputManager {
 		for(JoyAddr pair: buttonMap.keySet()) {
 			newButton = joysticks[pair.ijoy].getRawButton(pair.ival);
 			buttonMap.get(pair).forEach(handler -> {
-				if(!handler.curr.equals(newButton)) {
+				if(handler.cont || !handler.curr.equals(newButton)) {
 					handler.curr = newButton;
 					handler.handler.accept(handler.curr);
 				}
@@ -70,7 +70,7 @@ public abstract class AbstractInputManager {
 		for(JoyAddr pair: axisMap.keySet()) {
 			newAxis = joysticks[pair.ijoy].getRawAxis(pair.ival);
 			axisMap.get(pair).forEach(handler -> {
-				if(!handler.curr.equals(newAxis)) {
+				if(handler.cont || !handler.curr.equals(newAxis)) {
 					handler.curr = newAxis;
 					handler.handler.accept(handler.curr);
 				}
@@ -81,7 +81,7 @@ public abstract class AbstractInputManager {
 			newAxis = joysticks[addr.addr1.ijoy].getRawAxis(addr.addr1.ival);
 			newAxis2 = joysticks[addr.addr2.ijoy].getRawAxis(addr.addr2.ival);
 			biAxisMap.get(addr).forEach(handler -> {
-				if(handler.axis1 != newAxis
+				if(handler.cont || handler.axis1 != newAxis
 						|| handler.axis2 != newAxis2) {
 					handler.axis1 = newAxis;
 					handler.axis2 = newAxis2;
@@ -96,7 +96,7 @@ public abstract class AbstractInputManager {
 			newAxis3 = joysticks[addr.addr3.ijoy].getRawAxis(addr.addr3.ival);
 			
 			triAxisMap.get(addr).forEach(handler -> {
-				if(handler.axis1 != newAxis
+				if(handler.cont || handler.axis1 != newAxis
 						|| handler.axis2 != newAxis2
 						|| handler.axis3 != newAxis3) {
 					handler.axis1 = newAxis;
@@ -111,7 +111,7 @@ public abstract class AbstractInputManager {
 		for(JoyAddr pair: povMap.keySet()) {
 			newPOV = joysticks[pair.ijoy].getPOV(pair.ival);
 			povMap.get(pair).forEach(handler -> {
-				if(!handler.curr.equals(newPOV)) {
+				if(handler.cont || !handler.curr.equals(newPOV)) {
 					handler.curr = newPOV;
 					handler.handler.accept(handler.curr);
 				}
@@ -120,10 +120,11 @@ public abstract class AbstractInputManager {
 	}
 	
 	public void addButtonAction(int joystick,
-			int button, Consumer<Boolean> handler) {
+			int button, Consumer<Boolean> handler, boolean continuous) {
 		LinkedList<ValueHandler<Boolean>> list = new LinkedList<>();
 		list.addFirst(new ValueHandler<>(
-				joysticks[joystick].getRawButton(button), handler));
+				joysticks[joystick].getRawButton(button), handler,
+					continuous));
 		buttonMap.merge(new JoyAddr(joystick, button), list,
 				(v0, v1) -> {
 					v0.addFirst(v1.getFirst());
@@ -134,7 +135,7 @@ public abstract class AbstractInputManager {
 	public void removeButtonAction(int joystick,
 			int button, Consumer<Boolean> handler) {
 		LinkedList<ValueHandler<Boolean>> list = new LinkedList<>();
-		list.addFirst(new ValueHandler<>(false, handler));
+		list.addFirst(new ValueHandler<>(false, handler, false));
 		buttonMap.merge(new JoyAddr(joystick, button), list,
 				(v0, v1) -> {
 					v0.remove(v1.getFirst());
@@ -143,10 +144,10 @@ public abstract class AbstractInputManager {
 	}
 	
 	public void addAxisAction(int joystick,
-			int axis, Consumer<Double> handler) {
+			int axis, Consumer<Double> handler, boolean continuous) {
 		LinkedList<ValueHandler<Double>> list = new LinkedList<>();
 		list.addFirst(new ValueHandler<>(
-				joysticks[joystick].getRawAxis(axis), handler));
+				joysticks[joystick].getRawAxis(axis), handler, continuous));
 		axisMap.merge(new JoyAddr(joystick, axis), list,
 				(v0, v1) -> {
 					v0.addFirst(v1.getFirst());
@@ -157,7 +158,7 @@ public abstract class AbstractInputManager {
 	public void removeAxisAction(int joystick,
 			int axis, Consumer<Double> handler) {
 		LinkedList<ValueHandler<Double>> list = new LinkedList<>();
-		list.addFirst(new ValueHandler<>(0.0, handler));
+		list.addFirst(new ValueHandler<>(0.0, handler, false));
 		axisMap.merge(new JoyAddr(joystick, axis), list,
 				(v0, v1) -> {
 					v0.remove(v1.getFirst());
@@ -166,11 +167,12 @@ public abstract class AbstractInputManager {
 	}
 	
 	public void addBiAxisAction(int joystick1, int axis1,
-			int joystick2, int axis2, BiConsumer<Double, Double> handler) {
+			int joystick2, int axis2, BiConsumer<Double, Double> handler,
+			boolean continuous) {
 		LinkedList<BiAxisHandler> list = new LinkedList<>();
 		list.addFirst(new BiAxisHandler(
 				joysticks[joystick1].getRawAxis(axis1),
-				joysticks[joystick2].getRawAxis(axis2), handler));
+				joysticks[joystick2].getRawAxis(axis2), handler, continuous));
 		biAxisMap.merge(new DualJoyAddr(new JoyAddr(joystick1, axis1),
 										new JoyAddr(joystick2, axis2)), list,
 				(v0, v1) -> {
@@ -182,7 +184,7 @@ public abstract class AbstractInputManager {
 	public void removeBiAxisAction(int joystick1, int axis1,
 			int joystick2, int axis2, BiConsumer<Double, Double> handler) {
 		LinkedList<BiAxisHandler> list = new LinkedList<>();
-		list.addFirst(new BiAxisHandler(0.0, 0.0, handler));
+		list.addFirst(new BiAxisHandler(0.0, 0.0, handler, false));
 		biAxisMap.merge(new DualJoyAddr(new JoyAddr(joystick1, axis1),
 										new JoyAddr(joystick2, axis2)), list,
 				(v0, v1) -> {
@@ -193,12 +195,12 @@ public abstract class AbstractInputManager {
 	
 	public void addTriAxisAction(int joystick1, int axis1,
 			int joystick2, int axis2, int joystick3, int axis3,
-			TriConsumer<Double, Double, Double> handler) {
+			TriConsumer<Double, Double, Double> handler, boolean continuous) {
 		LinkedList<TriAxisHandler> list = new LinkedList<>();
 		list.addFirst(new TriAxisHandler(
 				joysticks[joystick1].getRawAxis(axis1),
 				joysticks[joystick2].getRawAxis(axis2),
-				joysticks[joystick3].getRawAxis(axis3), handler));
+				joysticks[joystick3].getRawAxis(axis3), handler, continuous));
 		triAxisMap.merge(new TriJoyAddr(new JoyAddr(joystick1, axis1),
 										new JoyAddr(joystick2, axis2),
 										new JoyAddr(joystick3, axis3)), list,
@@ -212,7 +214,7 @@ public abstract class AbstractInputManager {
 			int joystick2, int axis2, int joystick3, int axis3,
 			TriConsumer<Double, Double, Double> handler) {
 		LinkedList<TriAxisHandler> list = new LinkedList<>();
-		list.addFirst(new TriAxisHandler(0.0, 0.0, 0.0, handler));
+		list.addFirst(new TriAxisHandler(0.0, 0.0, 0.0, handler, false));
 		triAxisMap.merge(new TriJoyAddr(new JoyAddr(joystick1, axis1),
 										new JoyAddr(joystick2, axis2),
 										new JoyAddr(joystick3, axis3)), list,
@@ -223,10 +225,10 @@ public abstract class AbstractInputManager {
 	}
 	
 	public void addPOVAction(int joystick,
-			int pov, Consumer<Integer> handler) {
+			int pov, Consumer<Integer> handler, boolean continuous) {
 		LinkedList<ValueHandler<Integer>> list = new LinkedList<>();
 		list.addFirst(new ValueHandler<>(
-				joysticks[joystick].getPOV(pov), handler));
+				joysticks[joystick].getPOV(pov), handler, continuous));
 		povMap.merge(new JoyAddr(joystick, pov), list,
 				(v0, v1) -> {
 					v0.addFirst(v1.getFirst());
@@ -237,7 +239,7 @@ public abstract class AbstractInputManager {
 	public void removePOVAction(int joystick,
 			int pov, Consumer<Integer> handler) {
 		LinkedList<ValueHandler<Integer>> list = new LinkedList<>();
-		list.addFirst(new ValueHandler<>(0, handler));
+		list.addFirst(new ValueHandler<>(0, handler, false));
 		povMap.merge(new JoyAddr(joystick, pov), list,
 				(v0, v1) -> {
 					v0.remove(v1.getFirst());
@@ -327,10 +329,12 @@ public abstract class AbstractInputManager {
 		
 		public T curr;
 		public final Consumer<T> handler;
+		public boolean cont;
 		
-		public ValueHandler(T curr, Consumer<T> handler) {
+		public ValueHandler(T curr, Consumer<T> handler, boolean cont) {
 			this.curr = curr;
 			this.handler = handler;
+			this.cont = cont;
 		}
 		
 		@Override
@@ -348,12 +352,14 @@ public abstract class AbstractInputManager {
 		
 		public double axis1, axis2;
 		public final BiConsumer<Double, Double> handler;
+		public boolean cont;
 		
 		public BiAxisHandler(double axis1, double axis2,
-				BiConsumer<Double, Double> handler) {
+				BiConsumer<Double, Double> handler, boolean cont) {
 			this.axis1 = axis1;
 			this.axis2 = axis2;
 			this.handler = handler;
+			this.cont = cont;
 		}
 		
 		@Override
@@ -371,13 +377,15 @@ public abstract class AbstractInputManager {
 		
 		public double axis1, axis2, axis3;
 		public final TriConsumer<Double, Double, Double> handler;
+		public boolean cont;
 		
 		public TriAxisHandler(double axis1, double axis2, double axis3,
-				TriConsumer<Double, Double, Double> handler) {
+				TriConsumer<Double, Double, Double> handler, boolean cont) {
 			this.axis1 = axis1;
 			this.axis2 = axis2;
 			this.axis3 = axis3;
 			this.handler = handler;
+			this.cont = cont;
 		}
 		
 		@Override
