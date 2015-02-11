@@ -143,6 +143,33 @@ public abstract class AbstractInputManager {
 				});
 	}
 	
+	public void addButtonAction(int joystick,
+			int button, Runnable handler, boolean continuous) {
+		LinkedList<ValueHandler<Boolean>> list = new LinkedList<>();
+		list.addFirst(new ValueHandler<>(
+				joysticks[joystick].getRawButton(button), value -> {
+					if(value) handler.run();
+				}, continuous));
+		list.getFirst().buttonHandler = handler;
+		buttonMap.merge(new JoyAddr(joystick, button), list,
+				(v0, v1) -> {
+					v0.addFirst(v1.getFirst());
+					return v0;
+				});
+	}
+	
+	public void removeButtonAction(int joystick,
+			int button, Runnable handler) {
+		LinkedList<ValueHandler<Boolean>> list = new LinkedList<>();
+		list.addFirst(new ValueHandler<>(false, value -> {}, false));
+		list.getFirst().buttonHandler = handler;
+		buttonMap.merge(new JoyAddr(joystick, button), list,
+				(v0, v1) -> {
+					v0.remove(v1.getFirst());
+					return v0.isEmpty() ? null : v0;
+				});
+	}
+	
 	public void addAxisAction(int joystick,
 			int axis, Consumer<Double> handler, boolean continuous) {
 		LinkedList<ValueHandler<Double>> list = new LinkedList<>();
@@ -330,11 +357,13 @@ public abstract class AbstractInputManager {
 		public T curr;
 		public final Consumer<T> handler;
 		public boolean cont;
+		public Runnable buttonHandler;
 		
 		public ValueHandler(T curr, Consumer<T> handler, boolean cont) {
 			this.curr = curr;
 			this.handler = handler;
 			this.cont = cont;
+			this.buttonHandler = null;
 		}
 		
 		@Override
@@ -343,7 +372,9 @@ public abstract class AbstractInputManager {
 				return false;
 			}
 			
-			return (handler == ((ValueHandler<?>)o).handler);
+			return (buttonHandler != null && buttonHandler
+					== ((ValueHandler<?>)o).buttonHandler) ||
+					(handler == ((ValueHandler<?>)o).handler);
 		}
 		
 	}
@@ -400,7 +431,7 @@ public abstract class AbstractInputManager {
 	}
 	
 	@FunctionalInterface
-	private static interface TriConsumer<T, U, V> {
+	public static interface TriConsumer<T, U, V> {
 		
 		void accept(T t, U u, V v);
 		
