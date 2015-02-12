@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 
-public class InputManager extends AbstractInputManager {
+public class InputManager extends AbstractInputManager_ {
 
 	private RobotDrive drive;
 	private Gyro gyro;
@@ -25,7 +25,7 @@ public class InputManager extends AbstractInputManager {
 				0, ATTACK3_AXIS_X, // left x
 				this::driveBot, true);
 		this.addButtonAction(1, 1, this::setUseGyro, false); // right trigger
-		this.addButtonAction(1, 2, this::resetGyro, false); // right button 2
+		this.addButtonAction(1, 2, gyro::reset, false); // right button 2
 	}
 	
 	public void driveBot(double xvel, double yvel, double rotate) {
@@ -35,10 +35,6 @@ public class InputManager extends AbstractInputManager {
 	
 	public void setUseGyro(boolean button) {
 		useGyro = button;
-	}
-	
-	public void resetGyro(boolean button) {
-		if(button) gyro.reset();
 	}
 	
 }

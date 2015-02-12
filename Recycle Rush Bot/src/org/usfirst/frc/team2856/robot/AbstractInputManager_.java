@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj.Joystick;
 
-public abstract class AbstractInputManager {
+public abstract class AbstractInputManager_ {
 
 	public static final int
 			ATTACK3_AXIS_X = 0,
@@ -46,7 +46,7 @@ public abstract class AbstractInputManager {
 	private TreeMap<TriJoyAddr, LinkedList<TriAxisHandler>> triAxisMap;
 	private TreeMap<JoyAddr, LinkedList<ValueHandler<Integer>>> povMap;
 	
-	public AbstractInputManager(Joystick... jsticks) {
+	public AbstractInputManager_(Joystick... jsticks) {
 		joysticks = jsticks;
 		
 		buttonMap = new TreeMap<>();
