@@ -3,7 +3,7 @@ package org.usfirst.frc.team2856.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 
-public class RecycleRushBot extends IterativeRobot {
+public class Robot extends IterativeRobot {
     
 	public void robotInit() {
 		
