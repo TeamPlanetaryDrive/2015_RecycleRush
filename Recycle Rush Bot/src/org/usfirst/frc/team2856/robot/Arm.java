@@ -1,5 +1,11 @@
 package org.usfirst.frc.team2856.robot;
 
-public class Arm {
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
+public class Arm {
+	private NetworkTable table;
+
+	public Arm(NetworkTable tableIn) {
+		table = tableIn;
+	}
 }
