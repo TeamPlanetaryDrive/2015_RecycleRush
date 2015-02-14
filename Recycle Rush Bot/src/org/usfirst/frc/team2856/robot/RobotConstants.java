@@ -44,5 +44,24 @@ public class RobotConstants {
 		DT_ENC_RESOLUTION = 1/188.3,
 		DT_PID_PERIOD = 0.010,
 		DT_PID_EFFORT_MAX = 1.0;
-
+	
+	//Lift SpeedController Channels
+	public static final int
+		LIFT_SC_CHANNEL = 4;
+	
+	//Lift Encoder Channels
+	public static final int
+		LIFT_ENC_CHANNEL_A = 8,
+		LIFT_ENC_CHANNEL_B = 9;
+	
+	//Lift Limit Switch
+	public static final int
+		LIFT_LIMIT_LOWER_CHANNEL = 10,
+		LIFT_LIMIT_UPPER_CHANNEL = 11;
+	
+	//Lift Parameters
+	public static final double
+		LIFT_ENC_RESOLUTION = 1/188.3;
+	
+	
 }
