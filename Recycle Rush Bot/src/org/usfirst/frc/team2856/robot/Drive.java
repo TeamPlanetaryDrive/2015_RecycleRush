@@ -118,6 +118,11 @@ public class Drive {
 		rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
 	}
 
+	public boolean isGyroActive()
+	{ return gyroActive; }
+	public void setGyroActive(boolean active)
+	{ gyroActive = active; }
+	
 	public void EncoderGetPosition() {
 		
 	}
