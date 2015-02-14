@@ -40,9 +40,20 @@ public class RobotConstants {
 		DT_ENC_REARRIGHT_CHANNEL_B  = 7;
 
 	// Drive Train Parameters
+	public static final int
+		DT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		DT_ENC_RESOLUTION = 1/188.3,
-		DT_PID_PERIOD = 0.010,
-		DT_PID_EFFORT_MAX = 1.0;
+		DT_ENC_RESOLUTION = 1/188.3, // (wheel revs: 7 cpr * 26.9)
+		DT_PID_PERIOD = 0.010,   // (s)
+		DT_PID_EFFORT_MAX = 1.0, // (0-1)
+		DT_SPEED_MAX = 2.5;      // (rev/s)
 
+	// Drive Train PID Gains
+	public static final double
+		DT_PID_POSITION_KP = 2.00,
+		DT_PID_POSITION_KI = 0.01,
+		DT_PID_POSITION_KD = 1.00,
+		DT_PID_SPEED_KP = 0.10,
+		DT_PID_SPEED_KI = 0.01,
+		DT_PID_SPEED_KD = 0.20;
 }
