@@ -17,7 +17,7 @@ public class InputManager extends AbstractInputManager_ {
 		
 		this.drive = drive;
 		this.gyro = gyro;
-		useGyro = true;
+		useGyro = false;
 		
 		this.addTriAxisAction(
 				1, ATTACK3_AXIS_X, // right x
