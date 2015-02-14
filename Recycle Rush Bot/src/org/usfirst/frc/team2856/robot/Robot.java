@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
 
     public void teleopPeriodic() {
         input.update();
+        drive.Update();
     }
 
     public void testInit() {
