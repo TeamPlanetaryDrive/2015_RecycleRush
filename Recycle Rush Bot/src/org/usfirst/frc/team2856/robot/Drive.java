@@ -42,6 +42,7 @@ public class Drive {
 	
 	// Gyro
 	private Gyro gyro;
+	private boolean gyroActive;
 
 	// PID Constants
 	private double Kp = 0.1;  //2.00;
@@ -49,8 +50,8 @@ public class Drive {
 	private double Kd = 0.2;  //1.00;
 
 
-	public Drive(NetworkTable tableIn) {
-		table = tableIn;
+	public Drive() {
+		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
 
 		// Front Left Wheel
 		frontLeftEncoder = new Encoder(RobotConstants.DT_ENC_FRONTLEFT_CHANNEL_A, RobotConstants.DT_ENC_FRONTLEFT_CHANNEL_B, false, EncodingType.k4X);
@@ -81,6 +82,7 @@ public class Drive {
 		
 		// Gyro
 		gyro = new Gyro(RobotConstants.DT_GYRO_CHANNEL);
+		gyroActive = false;
 		
 		// Set encoder resolution
 		frontLeftEncoder.setDistancePerPulse(RobotConstants.DT_ENC_RESOLUTION);
@@ -107,5 +109,48 @@ public class Drive {
 		table.putNumber("DT.Kp", Kp);
 		table.putNumber("DT.Ki", Ki);
 		table.putNumber("DT.Kd", Kd);
+	}
+
+	public void RDrive(double x, double y, double rotation) {
+		double gyroAngle;
+		
+		gyroAngle = gyroActive ? gyro.getAngle() : 0;
+		rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
+	}
+
+	public void EncoderGetPosition() {
+		
+	}
+
+	public void EncoderGetRate() {
+		
+	}
+
+	public void EncoderReset() {
+		
+	}
+
+	public void GyroGetAngle() {
+		
+	}
+
+	public void GyroGetRate() {
+		
+	}
+
+	public void GyroReset() {
+		
+	}
+
+	public void PidSpeedStart() {
+		
+	}
+
+	public void PidStop() {
+		
+	}
+
+	public void Update() {
+		
 	}
 }

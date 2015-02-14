@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class Lift {
 	private NetworkTable table;
     
-	public Lift(NetworkTable tableIn) {
-		table = tableIn;
+	public Lift() {
+		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
 	}
 
 }

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class Arm {
 	private NetworkTable table;
 
-	public Arm(NetworkTable tableIn) {
-		table = tableIn;
+	public Arm() {
+		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
 	}
 }

@@ -2,6 +2,10 @@ package org.usfirst.frc.team2856.robot;
 
 public class RobotConstants {
 
+	// Network table
+	public static final String
+		NT_SOURCE = "SmartDashboard";
+
 	// InputManager Joysticks and the XBox controller Ports
 	public static final int
 		IM_JOYSTICK_LEFT   = 0,

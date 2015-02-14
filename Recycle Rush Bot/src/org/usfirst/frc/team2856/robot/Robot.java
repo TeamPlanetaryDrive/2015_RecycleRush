@@ -12,12 +12,12 @@ public class Robot extends IterativeRobot {
     private Lift lift;
     private NetworkTable table;
     private PowerDistributionPanel power;
-	
+
 	public void robotInit() {
-		table = NetworkTable.getTable("SmartDashboard");
-		arm   = new Arm(table);
-		drive = new Drive(table);
-		lift  = new Lift(table);
+		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
+		arm   = new Arm();
+		drive = new Drive();
+		lift  = new Lift();
 		power = new PowerDistributionPanel();
     }
 
@@ -40,11 +40,11 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         input = new TelopInputManager(arm, drive, lift);
     }
-    
+
     public void teleopPeriodic() {
         input.update();
     }
-    
+
     public void testInit() {
         
     }
@@ -52,5 +52,5 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
     	table.putNumber("TotalCurrent", power.getTotalCurrent());
     }
-    
+
 }
