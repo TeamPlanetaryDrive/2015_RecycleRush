@@ -56,4 +56,22 @@ public class RobotConstants {
 		DT_PID_SPEED_KP = 0.10,
 		DT_PID_SPEED_KI = 0.01,
 		DT_PID_SPEED_KD = 0.20;
+	
+	//Lift SpeedController Channels
+	public static final int
+		LIFT_SC_CHANNEL = 4;
+	
+	//Lift Encoder Channels
+	public static final int
+		LIFT_ENC_CHANNEL_A = 8,
+		LIFT_ENC_CHANNEL_B = 9;
+	
+	//Lift Limit Switch
+	public static final int
+		LIFT_LIMIT_LOWER_CHANNEL = 10,
+		LIFT_LIMIT_UPPER_CHANNEL = 11;
+	
+	//Lift Parameters
+	public static final double
+		LIFT_ENC_RESOLUTION = 1/7.0;
 }
