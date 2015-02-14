@@ -44,7 +44,10 @@ public class Lift {
 	
 
 	public void PIDMoveStart(double dist){
-		
+		pid.enable();
+		pid.setInputRange(-1, 1);
+		pid.setOutputRange(-1, 1);
+		pid.setSetpoint(dist);
 	}
 	
 	public void PIDStop(){
@@ -76,14 +79,14 @@ public class Lift {
 		if (lowerSwitch.get() || upperSwitch.get()) {//if a switch is pressed
 			//if lower limit is pressed only let this go up
 			if (lowerSwitch.get()) {
-				if (input < 0)//???
+				if (input < 0)
 					motor.set(0);
 				else
 					motor.set(input);
 			}
 			//if upper limit is pressed only let it go down
 			if (upperSwitch.get()) {
-				if (input > 0)//???
+				if (input > 0)
 					motor.set(0);
 				else
 					motor.set(input);
