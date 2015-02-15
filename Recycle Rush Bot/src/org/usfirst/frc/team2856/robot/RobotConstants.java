@@ -14,7 +14,7 @@ public class RobotConstants {
 	public static final int
 		IM_JOYSTICK_LEFT   = 0,
 		IM_JOYSTICK_RIGHT  = 1,
-		IM_XBOX_CONTROLLER = 0;
+		IM_XBOX_CONTROLLER = 2;
 
 	// Arm Potentiometer Channels
 	public static final int

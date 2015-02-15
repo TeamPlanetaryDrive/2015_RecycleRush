@@ -10,7 +10,7 @@ public class TelopInputManager extends AbstractInputManager {
 	public TelopInputManager(Arm armIn, Drive driveIn, Lift liftIn) {
 		super(new Joystick(RobotConstants.IM_JOYSTICK_LEFT),    // left = 0
 				new Joystick(RobotConstants.IM_JOYSTICK_RIGHT), // right = 1
-				new Joystick(RobotConstants.IM_XBOX_CONTROLLER)); 
+				new Joystick(RobotConstants.IM_XBOX_CONTROLLER)); // xbox = 2
 		
 		arm = armIn;
 		drive = driveIn;
@@ -29,5 +29,33 @@ public class TelopInputManager extends AbstractInputManager {
 		this.addButtonAction(0, 6, drive::PidSpeedStart, false);   // left 6
 		this.addButtonAction(0, 7, drive::PidStop, false);         // left 7
 		this.addButtonAction(1, 11, drive::EncoderReset, false);   // right 11
+		
+		this.addBiAxisAction(
+				2, XBOX_AXIS_LX, // xbox left x
+				2, XBOX_AXIS_RX, // xbox right x
+				this::armsSetEffort, false);
+		this.addButtonAction(2, XBOX_BUTTON_A, // xbox A
+				this::leftPIDMoveStart, false);
+		this.addButtonAction(2, XBOX_BUTTON_B, // xbox B
+				this::rightPIDMoveStart, false);
+		this.addButtonAction(2, ATTACK3_AXIS_X, // xbox X
+				arm::LeftPidStop, false);
+		this.addButtonAction(2, ATTACK3_AXIS_Y, // xbox Y
+				arm::RightPidStop, false);
+		this.addAxisAction(2, 3, lift::Move, false);
 	}
+	
+	private void armsSetEffort(double left, double right) {
+		arm.setEffort(-left, right);
+	}
+	
+	private void leftPIDMoveStart() {
+		arm.LeftPidMoveStart(0.1);
+	}
+	
+	private void rightPIDMoveStart() {
+		arm.RightPidMoveStart(0.1);
+	}
+	
+	
 }

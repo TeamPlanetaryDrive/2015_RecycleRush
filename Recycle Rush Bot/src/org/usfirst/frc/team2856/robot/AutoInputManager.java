@@ -18,7 +18,8 @@ public class AutoInputManager extends AbstractInputManager {
 	@Override
 	public void preUpdate() {
 		if(first) {
-			
+			drive.PidMoveStart(2);
+			first = false;
 		}
 	}
 	
