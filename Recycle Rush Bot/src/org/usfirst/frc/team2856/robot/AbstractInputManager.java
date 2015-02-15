@@ -57,6 +57,8 @@ public abstract class AbstractInputManager {
 	}
 	
 	public void update() {
+		preUpdate();
+		
 		for(JoyAddr pair: buttonMap.keySet()) {
 			newButton = joysticks[pair.ijoy].getRawButton(pair.ival);
 			buttonMap.get(pair).forEach(handler -> {
@@ -117,7 +119,12 @@ public abstract class AbstractInputManager {
 				}
 			});
 		}
+		
+		postUpdate();
 	}
+	
+	public void preUpdate() {}
+	public void postUpdate() {}
 	
 	public void addButtonAction(int joystick,
 			int button, Consumer<Boolean> handler, boolean continuous) {
