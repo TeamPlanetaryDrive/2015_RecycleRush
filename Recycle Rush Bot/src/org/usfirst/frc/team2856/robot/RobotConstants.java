@@ -16,10 +16,36 @@ public class RobotConstants {
 		IM_JOYSTICK_RIGHT  = 1,
 		IM_XBOX_CONTROLLER = 0;
 
+	// Arm Potentiometer Channels
+	public static final int
+		ARM_POT_LEFT_CHANNEL = 1,  //FIXME: value needs checking
+		ARM_POT_RIGHT_CHANNEL = 2;  //FIXME: value needs checking
+
+	// Arm Potentiometer Parameters
+	public static final double
+		ARM_POT_LEFT_RANGE = 1.0,  //FIXME: value needs updating
+		ARM_POT_RIGHT_RANGE = 1.0,  //FIXME: value needs updating
+		ARM_POT_LEFT_OFFSET = 0.0,  //FIXME: value needs updating
+		ARM_POT_RIGHT_OFFSET = 0.0;  //FIXME: value needs updating
+
 	// Arm SpeedController Channels
 	public static final int
 		ARM_SC_LEFT_CHANNEL  = 4,
 		ARM_SC_RIGHT_CHANNEL = 5;		
+
+	// Arm Parameters
+	public static final double
+		ARM_ACCEL_RATE = 5.0,     // (rev/s^2)
+		ARM_PID_EFFORT_MAX = 0.5, // (0-1)
+		ARM_PID_PERIOD = 0.010,   // (s)
+		ARM_PID_POS_SETTLE = 0.5, // (s)
+		ARM_SPEED_MAX = 2.5;      // (rev/s)
+
+	// Arm PID Gains
+	public static final double
+		ARM_PID_KP = 2.00,
+		ARM_PID_KI = 0.01,
+		ARM_PID_KD = 1.00;
 
 	// Drive Train Gyro Channel
 	public static final int
