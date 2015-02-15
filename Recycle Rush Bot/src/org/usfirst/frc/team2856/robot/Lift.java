@@ -22,9 +22,9 @@ public class Lift {
     private PIDController pid;
     private PidSpeedController control;
     private double
-    	Kp = 0.2,
-    	Ki = 0.1,
-    	Kd = 0;
+    	Kp = RobotConstants.LIFT_KP,
+    	Ki = RobotConstants.LIFT_KI,
+    	Kd = RobotConstants.LIFT_KD;
     
     private boolean PIDon = false;
     
@@ -33,6 +33,9 @@ public class Lift {
  	private MoveRefGen refGen;
  	private double smallNumber;
     
+ 	//move vars
+ 	private double distFromOrigin;//assuming origin is the bottom
+ 	private double totalDist  = RobotConstants.LIFT_HEIGHT;//inches
     
 	public Lift(){
 		//Instantiate Variables
@@ -58,6 +61,8 @@ public class Lift {
 		moveActive = false;
 		refGen = new MoveRefGen();
 		
+		//move vars
+		distFromOrigin = 0;
 	}
 	
 
@@ -145,33 +150,71 @@ public class Lift {
 			table.putNumber("Lift.Vel",  enc.getRate() + smallNumber);
 			table.putNumber("Lift.Eff",  motor.get() + smallNumber);
 			table.putNumber("Lift.Cur",  pdp.getCurrent(RobotConstants.LIFT_MOTOR_POWERPANEL_CHANNEL) + smallNumber);
-	
-			
 		}
+		distFromOrigin += enc.getDistance();
 	}
 	
-	public void Move(double input){
+	public void Move(double effort){
 		
 		if (lowerSwitch.get() || upperSwitch.get()) {//if a switch is pressed
 			//if lower limit is pressed only let this go up
 			if (lowerSwitch.get()) {
-				if (input < 0)
+				if (effort < 0)
 					motor.set(0);
 				else
-					motor.set(input);
+					motor.set(effort);
 			}
 			//if upper limit is pressed only let it go down
 			if (upperSwitch.get()) {
-				if (input > 0)
+				if (effort > 0)
 					motor.set(0);
 				else
-					motor.set(input);
+					motor.set(effort);
 			}
 		}else{//no switch is pressed
-			motor.set(input);
+			motor.set(effort);
 		}
 	}
 	
+	/*move to specific location*/
+	public void moveToTop(){
+		if(!upperSwitch.get()){
+			if(PIDon)
+				PIDMoveStart(totalDist - distFromOrigin);//find out distance
+			else
+				moveDist(totalDist - distFromOrigin);
+		}
+	}
 	
-	//work on effort and network tables
+	public void moveToBottom(){
+		if(!lowerSwitch.get()){
+			if(PIDon)
+				PIDMoveStart(-distFromOrigin);//find out distance
+			else
+				moveDist(-distFromOrigin);
+		}
+	}
+	
+	/*FIX THIS FOR DISTANCE*/
+	public void moveDist(double dist){
+		
+		if (lowerSwitch.get() || upperSwitch.get()) {//if a switch is pressed
+			//if lower limit is pressed only let this go up
+			if (lowerSwitch.get()) {
+				if (dist < 0)
+					motor.set(0);
+				else
+					motor.set(dist);
+			}
+			//if upper limit is pressed only let it go down
+			if (upperSwitch.get()) {
+				if (dist > 0)
+					motor.set(0);
+				else
+					motor.set(dist);
+			}
+		}else{//no switch is pressed
+			motor.set(dist);
+		}
+	}
 }
