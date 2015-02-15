@@ -8,7 +8,7 @@ public class TelopInputManager extends AbstractInputManager {
 	private Lift lift;
 
 	public TelopInputManager(Arm armIn, Drive driveIn, Lift liftIn) {
-		super(new Joystick(RobotConstants.IM_JOYSTICK_LEFT), // left = 0
+		super(new Joystick(RobotConstants.IM_JOYSTICK_LEFT),    // left = 0
 				new Joystick(RobotConstants.IM_JOYSTICK_RIGHT), // right = 1
 				new Joystick(RobotConstants.IM_XBOX_CONTROLLER)); 
 		
@@ -22,15 +22,12 @@ public class TelopInputManager extends AbstractInputManager {
 				0, ATTACK3_AXIS_X, // left x
 				drive::RDrive, true);
 		
-		this.addButtonAction(1, 8, this::dtGyroOn, false); // left 8
-		this.addButtonAction(1, 9, this::dtGyroOff, false); // left 9
-		this.addButtonAction(0, 3, drive::GyroReset, false); // right 3
+		this.addButtonAction(1, 8, drive::GyroSetActive, false);   // left 8
+		this.addButtonAction(1, 9, drive::GyroClearActive, false); // left 9
+		this.addButtonAction(0, 3, drive::GyroReset, false);       // right 3
 		
-		this.addButtonAction(0, 6, drive::PidSpeedStart, false); // left 6
-		this.addButtonAction(0, 7, drive::PidStop, false); // left 7
-		this.addButtonAction(1, 11, drive::EncoderReset, false); // right 11
+		this.addButtonAction(0, 6, drive::PidSpeedStart, false);   // left 6
+		this.addButtonAction(0, 7, drive::PidStop, false);         // left 7
+		this.addButtonAction(1, 11, drive::EncoderReset, false);   // right 11
 	}
-
-	public void dtGyroOn() { drive.setGyroActive(true); }
-	public void dtGyroOff() { drive.setGyroActive(false); }
 }

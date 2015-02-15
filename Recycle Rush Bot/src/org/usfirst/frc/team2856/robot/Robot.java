@@ -43,15 +43,17 @@ public class Robot extends IterativeRobot {
 
     public void teleopPeriodic() {
         input.update();
-        drive.Update();
+        drive.Update(false);
     }
 
     public void testInit() {
-        
+    	input = new TelopInputManager(arm, drive, lift);
     }
 
     public void testPeriodic() {
-    	table.putNumber("TotalCurrent", power.getTotalCurrent());
+        input.update();
+        drive.Update(true);
+        table.putNumber("TotalCurrent", power.getTotalCurrent());
     }
 
 }

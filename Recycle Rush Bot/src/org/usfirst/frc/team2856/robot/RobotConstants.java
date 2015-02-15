@@ -6,6 +6,10 @@ public class RobotConstants {
 	public static final String
 		NT_SOURCE = "SmartDashboard";
 
+	// Periodic update period
+	public static final double
+		PERIODIC_UPDATE_PERIOD = 0.020; // (s)
+
 	// InputManager Joysticks and the XBox controller Ports
 	public static final int
 		IM_JOYSTICK_LEFT   = 0,
@@ -34,13 +38,6 @@ public class RobotConstants {
 	public static final int
 		DT_GYRO_CHANNEL = 0;
 
-	// Drive Train SpeedController Channels
-	public static final int
-		DT_SC_FRONTLEFT_CHANNEL  = 3,
-		DT_SC_REARLEFT_CHANNEL   = 2,
-		DT_SC_FRONTRIGHT_CHANNEL = 0,
-		DT_SC_REARRIGHT_CHANNEL  = 1;
-
 	// Drive Train Encoder Channels
 	public static final int
 		DT_ENC_FRONTLEFT_CHANNEL_A  = 0,
@@ -52,13 +49,29 @@ public class RobotConstants {
 		DT_ENC_REARRIGHT_CHANNEL_A  = 6,
 		DT_ENC_REARRIGHT_CHANNEL_B  = 7;
 
+	// Drive Train SpeedController Channels
+	public static final int
+		DT_SC_FRONTLEFT_CHANNEL  = 3,
+		DT_SC_REARLEFT_CHANNEL   = 2,
+		DT_SC_FRONTRIGHT_CHANNEL = 0,
+		DT_SC_REARRIGHT_CHANNEL  = 1;
+
+	// Drive Train Current Channels
+	public static final int
+		DT_CUR_FRONTLEFT_CHANNEL  = 12,
+		DT_CUR_REARLEFT_CHANNEL   = 13,
+		DT_CUR_FRONTRIGHT_CHANNEL = 0,
+		DT_CUR_REARRIGHT_CHANNEL  = 1;
+
 	// Drive Train Parameters
 	public static final int
 		DT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
+		DT_ACCEL_RATE = 5.0,     // (rev/s^2)
 		DT_ENC_RESOLUTION = 1/188.3, // (wheel revs: 7 cpr * 26.9)
-		DT_PID_PERIOD = 0.010,   // (s)
 		DT_PID_EFFORT_MAX = 1.0, // (0-1)
+		DT_PID_PERIOD = 0.010,   // (s)
+		DT_PID_POS_SETTLE = 0.5, // (s)
 		DT_SPEED_MAX = 2.5;      // (rev/s)
 
 	// Drive Train PID Gains
@@ -69,7 +82,7 @@ public class RobotConstants {
 		DT_PID_SPEED_KP = 0.10,
 		DT_PID_SPEED_KI = 0.01,
 		DT_PID_SPEED_KD = 0.20;
-	
+
 	//Lift SpeedController Channels
 	public static final int
 		LIFT_SC_CHANNEL = 4;

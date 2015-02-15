@@ -5,10 +5,21 @@ public class AutoInputManager extends AbstractInputManager {
 	private Drive drive;
 	private Lift lift;
 
+	private boolean first;
+	
 	public AutoInputManager(Arm armIn, Drive driveIn, Lift liftIn) {
 		arm = armIn;
 		drive = driveIn;
 		lift = liftIn;
+		
+		first = true;
 	}
 
+	@Override
+	public void preUpdate() {
+		if(first) {
+			
+		}
+	}
+	
 }
