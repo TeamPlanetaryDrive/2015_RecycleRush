@@ -16,7 +16,20 @@ public class RobotConstants {
 	public static final int
 		ARM_SC_LEFT_CHANNEL  = 4,
 		ARM_SC_RIGHT_CHANNEL = 5;		
+	
+	//Arm Limit Switch Channels
+	public static final int
+		ARM_LIMIT_LEFT_CHANNEL = 4,
+		ARM_LIMIT_RIGHT_CHANNEL = 5;
 
+	//Pivot SpeedController Channel
+	public static final int
+		PIVOT_SC_CHANNEL = 6;
+
+	//Pivot Limit Switch Channel
+	public static final int
+		PIVOT_LIMIT_CHANNEL = 6;
+	
 	// Drive Train Gyro Channel
 	public static final int
 		DT_GYRO_CHANNEL = 0;
