@@ -132,9 +132,12 @@ public class Drive {
 
 	public void RDrive(double x, double y, double rotation) {
 		double gyroAngle;
-		
-		gyroAngle = gyroActive ? gyro.getAngle() : 0;
-		rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
+
+		if (moveActive)
+		{
+			gyroAngle = gyroActive ? gyro.getAngle() : 0;
+			rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
+		}
 	}
 
 	public void EncoderReset() {
@@ -166,6 +169,10 @@ public class Drive {
 
 	public void GyroSetActive() {
 		gyroActive = true;
+	}
+
+	public boolean IsMoveActive() {
+		return moveActive;
 	}
 
 	public void PidMoveStart(double distance) {
@@ -209,6 +216,9 @@ public class Drive {
 		rearLeftPID.setSetpoint(0);
 		frontRightPID.setSetpoint(0);
 		rearRightPID.setSetpoint(0);
+
+		// Disable user watchdog
+		rDrive.setSafetyEnabled(false);
 
 		// Enable PID controllers
 		frontLeftPID.enable();
@@ -266,6 +276,9 @@ public class Drive {
 		rearLeftPID.enable();
 		frontRightPID.enable();
 		rearRightPID.enable();
+		
+		// Position move active
+		moveActive = true;
 	}
 
 	public void PidStop() {
@@ -274,9 +287,17 @@ public class Drive {
 		rearLeftPID.disable();
 		frontRightPID.disable();
 		rearRightPID.disable();
+
+		// enable user watchdog
+		rDrive.setSafetyEnabled(true); 
+
+		// Position move finished
+		moveActive = false;
 	}
 
-	public void Update() {
+	public void Update(boolean debug) {
+		smallNumber = (smallNumber == 0) ? 0.001: 0;
+		
 		if (moveActive)
 		{
 			refGen.Update();
@@ -287,7 +308,10 @@ public class Drive {
 				rearLeftPID.setSetpoint(refPos);
 				frontRightPID.setSetpoint(refPos);
 				rearRightPID.setSetpoint(refPos);
-				table.putNumber("DT.PosR", refPos + smallNumber);
+				if (debug)
+				{
+					table.putNumber("DT.PosR", refPos + smallNumber);
+				}
 			}
 			else
 			{
@@ -295,38 +319,39 @@ public class Drive {
 			}
 		}
 
-		smallNumber = (smallNumber == 0) ? 0.001: 0;
-
-		// Front Left Wheel
-		//table.putNumber("FL.PosR", frontLeftEncoder.getDistance() + smallNumber);
-		table.putNumber("FL.Pos",  frontLeftEncoder.getDistance() + smallNumber);
-		table.putNumber("FL.VelR", frontLeftPID.getSetpoint() + smallNumber);
-		table.putNumber("FL.Vel",  frontLeftEncoder.getRate() + smallNumber);
-		table.putNumber("FL.Eff",  frontLeftMotor.get() + smallNumber);
-		table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTLEFT_CHANNEL) + smallNumber);
-
-		// Rear Left Wheel
-		//table.putNumber("RL.PosR", rearLeftEncoder.getDistance() + smallNumber);
-		table.putNumber("RL.Pos",  rearLeftEncoder.getDistance() + smallNumber);
-		table.putNumber("RL.VelR", rearLeftPID.getSetpoint() + smallNumber);
-		table.putNumber("RL.Vel",  rearLeftEncoder.getRate() + smallNumber);
-		table.putNumber("RL.Eff",  rearLeftMotor.get() + smallNumber);
-		table.putNumber("RL.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARLEFT_CHANNEL) + smallNumber);
-
-		// Front Right Wheel
-		//table.putNumber("FR.PosR", frontRightEncoder.getDistance() + smallNumber);
-		table.putNumber("FR.Pos",  frontRightEncoder.getDistance() + smallNumber);
-		table.putNumber("FR.VelR", frontRightPID.getSetpoint() + smallNumber);
-		table.putNumber("FR.Vel",  frontRightEncoder.getRate() + smallNumber);
-		table.putNumber("FR.Eff",  frontRightMotor.get() + smallNumber);
-		table.putNumber("FR.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTRIGHT_CHANNEL) + smallNumber);
-
-		// Rear Right Wheel
-		//table.putNumber("RR.PosR", rearRightEncoder.getDistance() + smallNumber);
-		table.putNumber("RR.Pos",  rearRightEncoder.getDistance() + smallNumber);
-		table.putNumber("RR.VelR", rearRightPID.getSetpoint() + smallNumber);
-		table.putNumber("RR.Vel",  rearRightEncoder.getRate() + smallNumber);
-		table.putNumber("RR.Eff",  rearRightMotor.get() + smallNumber);
-		table.putNumber("RR.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARRIGHT_CHANNEL) + smallNumber);
+		if (debug)
+		{
+			// Front Left Wheel
+			//table.putNumber("FL.PosR", frontLeftEncoder.getDistance() + smallNumber);
+			table.putNumber("FL.Pos",  frontLeftEncoder.getDistance() + smallNumber);
+			table.putNumber("FL.VelR", frontLeftPID.getSetpoint() + smallNumber);
+			table.putNumber("FL.Vel",  frontLeftEncoder.getRate() + smallNumber);
+			table.putNumber("FL.Eff",  frontLeftMotor.get() + smallNumber);
+			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTLEFT_CHANNEL) + smallNumber);
+	
+			// Rear Left Wheel
+			//table.putNumber("RL.PosR", rearLeftEncoder.getDistance() + smallNumber);
+			table.putNumber("RL.Pos",  rearLeftEncoder.getDistance() + smallNumber);
+			table.putNumber("RL.VelR", rearLeftPID.getSetpoint() + smallNumber);
+			table.putNumber("RL.Vel",  rearLeftEncoder.getRate() + smallNumber);
+			table.putNumber("RL.Eff",  rearLeftMotor.get() + smallNumber);
+			table.putNumber("RL.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARLEFT_CHANNEL) + smallNumber);
+	
+			// Front Right Wheel
+			//table.putNumber("FR.PosR", frontRightEncoder.getDistance() + smallNumber);
+			table.putNumber("FR.Pos",  frontRightEncoder.getDistance() + smallNumber);
+			table.putNumber("FR.VelR", frontRightPID.getSetpoint() + smallNumber);
+			table.putNumber("FR.Vel",  frontRightEncoder.getRate() + smallNumber);
+			table.putNumber("FR.Eff",  frontRightMotor.get() + smallNumber);
+			table.putNumber("FR.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTRIGHT_CHANNEL) + smallNumber);
+	
+			// Rear Right Wheel
+			//table.putNumber("RR.PosR", rearRightEncoder.getDistance() + smallNumber);
+			table.putNumber("RR.Pos",  rearRightEncoder.getDistance() + smallNumber);
+			table.putNumber("RR.VelR", rearRightPID.getSetpoint() + smallNumber);
+			table.putNumber("RR.Vel",  rearRightEncoder.getRate() + smallNumber);
+			table.putNumber("RR.Eff",  rearRightMotor.get() + smallNumber);
+			table.putNumber("RR.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARRIGHT_CHANNEL) + smallNumber);
+		}
 	}
 }
