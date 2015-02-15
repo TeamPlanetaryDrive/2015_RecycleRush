@@ -133,7 +133,7 @@ public class Drive {
 	public void RDrive(double x, double y, double rotation) {
 		double gyroAngle;
 
-		if (moveActive)
+		if (!moveActive)
 		{
 			gyroAngle = gyroActive ? gyro.getAngle() : 0;
 			rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
@@ -229,6 +229,7 @@ public class Drive {
 		// Configure and start move reference generator
 		refGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
 		refGen.Start(distance);
+		moveActive = true;
 	}
 
 	public void PidSpeedStart() {
@@ -276,9 +277,6 @@ public class Drive {
 		rearLeftPID.enable();
 		frontRightPID.enable();
 		rearRightPID.enable();
-		
-		// Position move active
-		moveActive = true;
 	}
 
 	public void PidStop() {

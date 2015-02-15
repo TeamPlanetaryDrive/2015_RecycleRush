@@ -29,7 +29,6 @@ public class Pivot {
 	}
 	
 	public void Update(){
-		
+		table.putBoolean("Closed", closedSwitch.get());
 	}
-	
 }
