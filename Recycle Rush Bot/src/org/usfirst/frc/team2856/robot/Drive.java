@@ -133,7 +133,7 @@ public class Drive {
 	public void RDrive(double x, double y, double rotation) {
 		double gyroAngle;
 
-		if (moveActive)
+		if (!moveActive)
 		{
 			gyroAngle = gyroActive ? gyro.getAngle() : 0;
 			rDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
