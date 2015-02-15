@@ -32,8 +32,13 @@ public class RobotConstants {
 	public static final int
 		ARM_SC_LEFT_CHANNEL  = 4,
 		ARM_SC_RIGHT_CHANNEL = 5;		
+	
+	//Arm Limit Switch Channels
+	public static final int
+		ARM_LIMIT_LEFT_CHANNEL = 4,
+		ARM_LIMIT_RIGHT_CHANNEL = 5;
 
-	// Drive Train Current Channels
+	// Arm Current Channels
 	public static final int
 		ARM_CUR_LEFT_CHANNEL  = 1,  //FIXME: value needs updating
 		ARM_CUR_RIGHT_CHANNEL = 1;  //FIXME: value needs updating
@@ -122,7 +127,7 @@ public class RobotConstants {
 	
 	//Lift motor power distribution channel
 	public static final int
-		LIFT_MOTOR_POWERPANEL_CHANNEL = 1922343650;//Don't know this
+		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;  //FIXME: value needs updating
 	
 	//Lift PID values
 	public static final double
@@ -133,4 +138,12 @@ public class RobotConstants {
 	//height
 	public static final double
 		LIFT_HEIGHT = 70;//inches
+	
+	// Pivot SpeedController Channel
+	public static final int
+		PIVOT_SC_CHANNEL = 6;
+
+	// Pivot Limit Switch Channel
+	public static final int
+		PIVOT_LIMIT_CHANNEL = 6;
 }
