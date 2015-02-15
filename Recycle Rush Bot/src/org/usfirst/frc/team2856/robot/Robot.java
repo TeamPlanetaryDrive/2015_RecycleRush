@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
 
     public void teleopPeriodic() {
         input.update();
+        arm.Update(false);
         drive.Update(false);
     }
 
@@ -52,6 +53,7 @@ public class Robot extends IterativeRobot {
 
     public void testPeriodic() {
         input.update();
+        arm.Update(true);
         drive.Update(true);
         table.putNumber("TotalCurrent", power.getTotalCurrent());
     }

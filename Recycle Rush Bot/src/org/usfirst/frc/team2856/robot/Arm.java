@@ -3,7 +3,6 @@ package org.usfirst.frc.team2856.robot;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -16,17 +15,17 @@ public class Arm {
 	private AnalogPotentiometer leftPot;
 	private SpeedController leftMotor;
 	private PIDController leftPID;
-	private PidSpeedController leftPidSpeed;
+	private MoveRefGen leftRefGen;
+	private boolean leftMoveActive;
 
 	// Right arm
 	private AnalogPotentiometer rightPot;
 	private SpeedController rightMotor;
 	private PIDController rightPID;
-	private PidSpeedController rightPidSpeed;
+	private MoveRefGen rightRefGen;
+	private boolean rightMoveActive;
 
 	// Other variables
-	private boolean moveActive;
-	private MoveRefGen refGen;
 	private double smallNumber;
 
 	public Arm() {
@@ -35,26 +34,24 @@ public class Arm {
 
 		// PID controller gains will be updated prior to enabling the controllers
 
-		// Front Left Wheel
+		// Left arm
 		leftPot = new AnalogPotentiometer(RobotConstants.ARM_POT_LEFT_CHANNEL, RobotConstants.ARM_POT_LEFT_RANGE, RobotConstants.ARM_POT_LEFT_OFFSET);
 		leftMotor = new Jaguar(RobotConstants.ARM_SC_LEFT_CHANNEL);
 		leftPID = new PIDController(0, 0, 0, leftPot, leftMotor, RobotConstants.ARM_PID_PERIOD);
-		leftPidSpeed = new PidSpeedController(leftPID, leftMotor);
+		leftRefGen = new MoveRefGen();
+		leftMoveActive = false;
 
-		// Rear Left Wheel
+		// Right arm
 		rightPot = new AnalogPotentiometer(RobotConstants.ARM_POT_RIGHT_CHANNEL, RobotConstants.ARM_POT_RIGHT_RANGE, RobotConstants.ARM_POT_RIGHT_OFFSET);
 		rightMotor = new Jaguar(RobotConstants.ARM_SC_RIGHT_CHANNEL);
 		rightPID = new PIDController(0, 0, 0, rightPot, rightMotor, RobotConstants.ARM_PID_PERIOD);
-		rightPidSpeed = new PidSpeedController(rightPID, rightMotor);
+		rightRefGen = new MoveRefGen();
+		rightMoveActive = false;
 
 		// Set PID output range
 		leftPID.setOutputRange (-RobotConstants.ARM_PID_EFFORT_MAX, RobotConstants.ARM_PID_EFFORT_MAX);
 		rightPID.setOutputRange  (-RobotConstants.ARM_PID_EFFORT_MAX, RobotConstants.ARM_PID_EFFORT_MAX);
 		
-		// PID move initialization
-		moveActive = false;
-		refGen = new MoveRefGen();
-
 		// Set initial network table values
 		table.putNumber("Arm.AccelRate", RobotConstants.ARM_ACCEL_RATE);
 		table.putNumber("Arm.MaxSpeed", RobotConstants.ARM_SPEED_MAX);
@@ -63,21 +60,60 @@ public class Arm {
 		table.putNumber("Arm.Kd", RobotConstants.ARM_PID_KD);
 	}
 
-	public void setSpeed(double left, double right) {
-		if (!moveActive)
+	public void setEffort(double left, double right) {
+		if (!leftMoveActive)
 		{
-			leftPidSpeed.set(left);
-			rightPidSpeed.set(right);
+			leftMotor.set(left);
+		}
+		if (!rightMoveActive)
+		{
+			rightMotor.set(right);
 		}
 	}
 
-	public boolean IsMoveActive() {
-		return moveActive;
+	public boolean IsLeftMoveActive() {
+		return leftMoveActive;
 	}
 
-	public void PidMoveStart(double distance) {
+	public boolean IsRightMoveActive() {
+		return rightMoveActive;
+	}
+
+	public void LeftPidMoveStart(double position) {
 		double Kp, Ki, Kd;
 		double accelRate;
+		double distance;
+		double maxSpeed;
+
+		// Update local parameters
+		Kp = table.getNumber("Arm.Kp");
+		Ki = table.getNumber("Arm.Ki");
+		Kd = table.getNumber("Arm.Kd");
+		accelRate = table.getNumber("Arm.AccelRate");
+		maxSpeed = table.getNumber("Arm.MaxSpeed");
+
+		// Reset PID controller
+		leftPID.reset();
+
+		// Set PID parameters
+		leftPID.setPID(Kp, Ki, Kd);
+
+		// Set PID set point to zero
+		leftPID.setSetpoint(0);
+
+		// Enable PID controller
+		leftPID.enable();
+
+		// Configure and start move reference generator
+		leftRefGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
+		distance = position - leftPot.get();
+		leftRefGen.Start(distance);
+	}
+
+	public void RightPidMoveStart(double position) {
+		double Kp, Ki, Kd;
+		double accelRate;
+		double distance;
 		double maxSpeed;
 
 		// Update local parameters
@@ -88,156 +124,91 @@ public class Arm {
 		maxSpeed = table.getNumber("Arm.MaxSpeed");
 
 		// Reset PID controllers
-		leftPID.reset();
 		rightPID.reset();
 
 		// Set PID parameters
-		frontLeftPID.setPID(Kp, Ki, Kd);
-		rearLeftPID.setPID(Kp, Ki, Kd);
-		frontRightPID.setPID(Kp, Ki, Kd);
-		rearRightPID.setPID(Kp, Ki, Kd);
+		rightPID.setPID(Kp, Ki, Kd);
 
-		// Set PID set points to zero
-		frontLeftPID.setSetpoint(0);
-		rearLeftPID.setSetpoint(0);
-		frontRightPID.setSetpoint(0);
-		rearRightPID.setSetpoint(0);
+		// Set PID set point to zero
+		rightPID.setSetpoint(0);
 
-		// Disable user watchdog
-		rDrive.setSafetyEnabled(false);
-
-		// Enable PID controllers
-		frontLeftPID.enable();
-		rearLeftPID.enable();
-		frontRightPID.enable();
-		rearRightPID.enable();
+		// Enable PID controller
+		rightPID.enable();
 
 		// Configure and start move reference generator
-		refGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
-		refGen.Start(distance);
+		rightRefGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
+		distance = position - rightPot.get();
+		rightRefGen.Start(distance);
 	}
 
-	public void PidSpeedStart() {
-		double Kp, Ki, Kd;
-		double maxSpeed;
-		
-		// Update local parameters
-		Kp = table.getNumber("DT.Spd.Kp");
-		Ki = table.getNumber("DT.Spd.Ki");
-		Kd = table.getNumber("DT.Spd.Kd");
-		maxSpeed = table.getNumber("DT.MaxSpeed");
-
-		// Reset PID controllers
-		frontLeftPID.reset();
-		rearLeftPID.reset();
-		frontRightPID.reset();
-		rearRightPID.reset();
-
-		// Set encoders to output speed to PID controllers
-		frontLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		rearLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		frontRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		rearRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-
-		// Set maximum speed
-		frontLeftPidSpeed.setMaxSpeed(maxSpeed);
-		rearLeftPidSpeed.setMaxSpeed(maxSpeed);
-		frontRightPidSpeed.setMaxSpeed(maxSpeed);
-		rearRightPidSpeed.setMaxSpeed(maxSpeed);
-
-		// Set PID parameters
-		frontLeftPID.setPID(Kp, Ki, Kd);
-		rearLeftPID.setPID(Kp, Ki, Kd);
-		frontRightPID.setPID(Kp, Ki, Kd);
-		rearRightPID.setPID(Kp, Ki, Kd);
-
-		// Set PID set points to zero
-		frontLeftPID.setSetpoint(0);
-		rearLeftPID.setSetpoint(0);
-		frontRightPID.setSetpoint(0);
-		rearRightPID.setSetpoint(0);
-
-		// Enable PID controllers
-		frontLeftPID.enable();
-		rearLeftPID.enable();
-		frontRightPID.enable();
-		rearRightPID.enable();
-		
-		// Position move active
-		moveActive = true;
-	}
-
-	public void PidStop() {
-		// Disable PID controllers
-		frontLeftPID.disable();
-		rearLeftPID.disable();
-		frontRightPID.disable();
-		rearRightPID.disable();
-
-		// enable user watchdog
-		rDrive.setSafetyEnabled(true); 
+	public void LeftPidStop() {
+		// Disable PID controller
+		leftPID.disable();
 
 		// Position move finished
-		moveActive = false;
+		leftMoveActive = false;
+	}
+
+	public void RightPidStop() {
+		// Disable PID controller
+		rightPID.disable();
+
+		// Position move finished
+		rightMoveActive = false;
 	}
 
 	public void Update(boolean debug) {
 		smallNumber = (smallNumber == 0) ? 0.001: 0;
 		
-		if (moveActive)
+		if (leftMoveActive)
 		{
-			refGen.Update();
-			if (refGen.IsActive())
+			leftRefGen.Update();
+			if (leftRefGen.IsActive())
 			{
-				double refPos = refGen.GetRefPosition();
-				frontLeftPID.setSetpoint(refPos);
-				rearLeftPID.setSetpoint(refPos);
-				frontRightPID.setSetpoint(refPos);
-				rearRightPID.setSetpoint(refPos);
+				double refPos = leftRefGen.GetRefPosition();
+				leftPID.setSetpoint(refPos);
 				if (debug)
 				{
-					table.putNumber("DT.PosR", refPos + smallNumber);
+					table.putNumber("ArmL.PosR", refPos + smallNumber);
 				}
 			}
 			else
 			{
-				PidStop();
+				LeftPidStop();
+			}
+		}
+
+		if (rightMoveActive)
+		{
+			rightRefGen.Update();
+			if (rightRefGen.IsActive())
+			{
+				double refPos = rightRefGen.GetRefPosition();
+				rightPID.setSetpoint(refPos);
+				if (debug)
+				{
+					table.putNumber("ArmR.PosR", refPos + smallNumber);
+				}
+			}
+			else
+			{
+				RightPidStop();
 			}
 		}
 
 		if (debug)
 		{
-			// Front Left Wheel
-			//table.putNumber("FL.PosR", frontLeftEncoder.getDistance() + smallNumber);
-			table.putNumber("FL.Pos",  frontLeftEncoder.getDistance() + smallNumber);
-			table.putNumber("FL.VelR", frontLeftPID.getSetpoint() + smallNumber);
-			table.putNumber("FL.Vel",  frontLeftEncoder.getRate() + smallNumber);
-			table.putNumber("FL.Eff",  frontLeftMotor.get() + smallNumber);
-			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTLEFT_CHANNEL) + smallNumber);
+			// Left arm
+			//table.putNumber("ArmL.PosR", leftPot.get() + smallNumber);
+			table.putNumber("ArmL.Pos",  leftPot.get() + smallNumber);
+			table.putNumber("ArmL.Eff",  leftMotor.get() + smallNumber);
+			table.putNumber("ArmL.Cur",  power.getCurrent(RobotConstants.ARM_CUR_LEFT_CHANNEL) + smallNumber);
 	
-			// Rear Left Wheel
-			//table.putNumber("RL.PosR", rearLeftEncoder.getDistance() + smallNumber);
-			table.putNumber("RL.Pos",  rearLeftEncoder.getDistance() + smallNumber);
-			table.putNumber("RL.VelR", rearLeftPID.getSetpoint() + smallNumber);
-			table.putNumber("RL.Vel",  rearLeftEncoder.getRate() + smallNumber);
-			table.putNumber("RL.Eff",  rearLeftMotor.get() + smallNumber);
-			table.putNumber("RL.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARLEFT_CHANNEL) + smallNumber);
-	
-			// Front Right Wheel
-			//table.putNumber("FR.PosR", frontRightEncoder.getDistance() + smallNumber);
-			table.putNumber("FR.Pos",  frontRightEncoder.getDistance() + smallNumber);
-			table.putNumber("FR.VelR", frontRightPID.getSetpoint() + smallNumber);
-			table.putNumber("FR.Vel",  frontRightEncoder.getRate() + smallNumber);
-			table.putNumber("FR.Eff",  frontRightMotor.get() + smallNumber);
-			table.putNumber("FR.Cur",  power.getCurrent(RobotConstants.DT_CUR_FRONTRIGHT_CHANNEL) + smallNumber);
-	
-			// Rear Right Wheel
-			//table.putNumber("RR.PosR", rearRightEncoder.getDistance() + smallNumber);
-			table.putNumber("RR.Pos",  rearRightEncoder.getDistance() + smallNumber);
-			table.putNumber("RR.VelR", rearRightPID.getSetpoint() + smallNumber);
-			table.putNumber("RR.Vel",  rearRightEncoder.getRate() + smallNumber);
-			table.putNumber("RR.Eff",  rearRightMotor.get() + smallNumber);
-			table.putNumber("RR.Cur",  power.getCurrent(RobotConstants.DT_CUR_REARRIGHT_CHANNEL) + smallNumber);
+			// Right arm
+			//table.putNumber("ArmR.PosR", rightPot.get() + smallNumber);
+			table.putNumber("ArmR.Pos",  rightPot.get() + smallNumber);
+			table.putNumber("ArmR.Eff",  rightMotor.get() + smallNumber);
+			table.putNumber("ArmR.Cur",  power.getCurrent(RobotConstants.ARM_CUR_RIGHT_CHANNEL) + smallNumber);
 		}
 	}
 }

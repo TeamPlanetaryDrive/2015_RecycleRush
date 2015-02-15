@@ -33,6 +33,11 @@ public class RobotConstants {
 		ARM_SC_LEFT_CHANNEL  = 4,
 		ARM_SC_RIGHT_CHANNEL = 5;		
 
+	// Drive Train Current Channels
+	public static final int
+		ARM_CUR_LEFT_CHANNEL  = 1,  //FIXME: value needs updating
+		ARM_CUR_RIGHT_CHANNEL = 1;  //FIXME: value needs updating
+
 	// Arm Parameters
 	public static final double
 		ARM_ACCEL_RATE = 5.0,     // (rev/s^2)
