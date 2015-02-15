@@ -86,5 +86,11 @@ public class RobotConstants {
 	
 	//Lift Parameters
 	public static final double
-		LIFT_ENC_RESOLUTION = 1/7.0;
+		LIFT_ENC_RESOLUTION = 1/7.0,
+		LIFT_PID_POS_SETTLE = 0.5; // (s)
+	
+	//Lift motor power distribution channel
+	public static final int
+		LIFT_MOTOR_POWERPANEL_CHANNEL = 1922343650;//Don't know this
+	
 }
