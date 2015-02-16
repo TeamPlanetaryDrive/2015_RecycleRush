@@ -35,8 +35,8 @@ public class RobotConstants {
 	
 	//Arm Limit Switch Channels
 	public static final int
-		ARM_LIMIT_LEFT_CHANNEL = 4,
-		ARM_LIMIT_RIGHT_CHANNEL = 1; // orig 5
+		ARM_LIMIT_LEFT_CHANNEL = 13,
+		ARM_LIMIT_RIGHT_CHANNEL = 14; // orig 5
 
 	// Arm Current Channels
 	public static final int
@@ -95,7 +95,7 @@ public class RobotConstants {
 		DT_PID_EFFORT_MAX = 1.0, // (0-1)
 		DT_PID_PERIOD = 0.010,   // (s)
 		DT_PID_POS_SETTLE = 0.5, // (s)
-		DT_SPEED_MAX = 2.5;      // (rev/s)
+		DT_SPEED_MAX = 2;      // (rev/s)
 
 	// Drive Train PID Gains
 	public static final double

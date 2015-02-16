@@ -27,6 +27,7 @@ public class Robot extends IterativeRobot {
 
     public void autonomousPeriodic() {
     	input.update();
+    	drive.Update(false);
     }
 
     public void disabledInit() {
