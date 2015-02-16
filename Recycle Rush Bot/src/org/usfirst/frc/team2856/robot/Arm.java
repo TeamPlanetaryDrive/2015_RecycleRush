@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2856.robot;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -18,7 +19,8 @@ public class Arm {
 	private MoveRefGen leftRefGen;
 	private boolean leftMoveActive;
 	private double leftStartPos;
-
+	private DigitalInput leftLimit;
+	
 	// Right arm
 	private AnalogPotentiometer rightPot;
 	private SpeedController rightMotor;
@@ -26,7 +28,8 @@ public class Arm {
 	private MoveRefGen rightRefGen;
 	private boolean rightMoveActive;
 	private double rightStartPos;
-
+	private DigitalInput rightLimit;
+	
 	// Other variables
 	private double smallNumber;
 
@@ -42,6 +45,7 @@ public class Arm {
 		leftPID = new PIDController(0, 0, 0, leftPot, leftMotor, RobotConstants.ARM_PID_PERIOD);
 		leftRefGen = new MoveRefGen();
 		leftMoveActive = false;
+		leftLimit = new DigitalInput(RobotConstants.ARM_LIMIT_LEFT_CHANNEL);
 
 		// Right arm
 		rightPot = new AnalogPotentiometer(RobotConstants.ARM_POT_RIGHT_CHANNEL, RobotConstants.ARM_POT_RIGHT_RANGE, RobotConstants.ARM_POT_RIGHT_OFFSET);
@@ -49,6 +53,7 @@ public class Arm {
 		rightPID = new PIDController(0, 0, 0, rightPot, rightMotor, RobotConstants.ARM_PID_PERIOD);
 		rightRefGen = new MoveRefGen();
 		rightMoveActive = false;
+		rightLimit = new DigitalInput(RobotConstants.ARM_LIMIT_RIGHT_CHANNEL);
 
 		// Set PID output range
 		leftPID.setOutputRange (-RobotConstants.ARM_PID_EFFORT_MAX, RobotConstants.ARM_PID_EFFORT_MAX);
@@ -65,11 +70,17 @@ public class Arm {
 	public void setEffort(double left, double right) {
 		if (!leftMoveActive)
 		{
-			leftMotor.set(left);
+			if (!(leftLimit.get() && left < 0))
+			{
+				leftMotor.set(left);
+			}
 		}
 		if (!rightMoveActive)
 		{
-			rightMotor.set(right);
+			if (!(rightLimit.get() && right < 0))
+			{
+				rightMotor.set(right);
+			}
 		}
 	}
 
@@ -167,7 +178,7 @@ public class Arm {
 		if (leftMoveActive)
 		{
 			leftRefGen.Update();
-			if (leftRefGen.IsActive())
+			if (leftRefGen.IsActive() && !(leftLimit.get() && (leftRefGen.GetRefPosition() < 0)))
 			{
 				double refPos = leftRefGen.GetRefPosition();
 				leftPID.setSetpoint(refPos + leftStartPos);
@@ -181,11 +192,15 @@ public class Arm {
 				LeftPidStop();
 			}
 		}
+		else if (leftLimit.get() && leftMotor.get() < 0)
+		{
+			leftMotor.set(0);
+		}
 
 		if (rightMoveActive)
 		{
 			rightRefGen.Update();
-			if (rightRefGen.IsActive())
+			if (rightRefGen.IsActive() && !(rightLimit.get() && (rightRefGen.GetRefPosition() < 0)))
 			{
 				double refPos = rightRefGen.GetRefPosition();
 				rightPID.setSetpoint(refPos + rightStartPos);
@@ -198,6 +213,10 @@ public class Arm {
 			{
 				RightPidStop();
 			}
+		}
+		else if (rightLimit.get() && rightMotor.get() < 0)
+		{
+			rightMotor.set(0);
 		}
 
 		if (debug)

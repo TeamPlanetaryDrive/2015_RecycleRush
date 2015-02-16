@@ -36,7 +36,7 @@ public class RobotConstants {
 	//Arm Limit Switch Channels
 	public static final int
 		ARM_LIMIT_LEFT_CHANNEL = 4,
-		ARM_LIMIT_RIGHT_CHANNEL = 5;
+		ARM_LIMIT_RIGHT_CHANNEL = 1; // orig 5
 
 	// Arm Current Channels
 	public static final int
