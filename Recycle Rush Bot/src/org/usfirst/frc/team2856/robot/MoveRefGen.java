@@ -67,6 +67,8 @@ public class MoveRefGen {
 				decelDist = endDist / 2;
 			}
 			decelStart = endDist - decelDist;
+			refDist = 0;
+			refSpeed = 0;
 			moveState = MoveState.Accel;
 		}
 	}

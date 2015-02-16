@@ -70,17 +70,17 @@ public class Arm {
 	public void setEffort(double left, double right) {
 		if (!leftMoveActive)
 		{
-			if (!(leftLimit.get() && left < 0))
-			{
+//			if (!(leftLimit.get() && left < 0))
+//			{
 				leftMotor.set(left);
-			}
+//			}
 		}
 		if (!rightMoveActive)
 		{
-			if (!(rightLimit.get() && right < 0))
-			{
+//			if (!(rightLimit.get() && right < 0))
+//			{
 				rightMotor.set(right);
-			}
+//			}
 		}
 	}
 
@@ -194,10 +194,10 @@ public class Arm {
 				LeftPidStop();
 			}
 		}
-		else if (leftLimit.get() && leftMotor.get() < 0)
-		{
-			leftMotor.set(0);
-		}
+//		else if (leftLimit.get() && leftMotor.get() < 0)
+//		{
+//			leftMotor.set(0);
+//		}
 
 		if (rightMoveActive)
 		{
@@ -216,10 +216,10 @@ public class Arm {
 				RightPidStop();
 			}
 		}
-		else if (rightLimit.get() && rightMotor.get() < 0)
-		{
-			rightMotor.set(0);
-		}
+//		else if (rightLimit.get() && rightMotor.get() < 0)
+//		{
+//			rightMotor.set(0);
+//		}
 
 		if (debug)
 		{
@@ -231,9 +231,9 @@ public class Arm {
 	
 			// Right arm
 			//table.putNumber("ArmR.PosR", rightPot.get() + smallNumber);
-			table.putNumber("FL.Pos",  rightPot.get() + smallNumber);
-			table.putNumber("FL.Eff",  rightMotor.get() + smallNumber);
-			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.ARM_CUR_RIGHT_CHANNEL) + smallNumber);
+			table.putNumber("ArmR.Pos",  rightPot.get() + smallNumber);
+			table.putNumber("ArmR.Eff",  rightMotor.get() + smallNumber);
+			table.putNumber("ArmR.Cur",  power.getCurrent(RobotConstants.ARM_CUR_RIGHT_CHANNEL) + smallNumber);
 		}
 	}
 }

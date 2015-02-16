@@ -35,8 +35,8 @@ public class Lift {
 
 		// PID controller gains will be updated prior to enabling the controllers
 		encoder = new Encoder(RobotConstants.LIFT_ENC_CHANNEL_A, RobotConstants.LIFT_ENC_CHANNEL_B, false, EncodingType.k4X);
-		motor = new Jaguar(RobotConstants.DT_SC_FRONTLEFT_CHANNEL);
-		pid = new PIDController(0, 0, 0, encoder, motor, RobotConstants.DT_PID_PERIOD);
+		motor = new Jaguar(RobotConstants.LIFT_SC_CHANNEL);
+		pid = new PIDController(0, 0, 0, encoder, motor, RobotConstants.ARM_PID_PERIOD);
 		lowerLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_LOWER_CHANNEL);
 		upperLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_UPPER_CHANNEL);
 		
@@ -72,15 +72,15 @@ public class Lift {
 	public void setEffort(double effort) {
 		if (!moveActive)
 		{
-			if ((effort < 0 && !lowerLimit.get()) ||
-				(effort > 0 && !upperLimit.get())   )
-			{
+//			if ((effort < 0 && !lowerLimit.get()) ||
+//				(effort > 0 && !upperLimit.get())   )
+//			{
 				motor.set(effort);
-			}
-			else
-			{
-				motor.set(0);
-			}
+//			}
+//			else
+//			{
+//				motor.set(0);
+//			}
 		}
 	}
 
@@ -178,11 +178,11 @@ public class Lift {
 				PidStop();
 			}
 		}
-		else if ((motor.get() < 0 && lowerLimit.get()) ||
-				 (motor.get() > 0 && upperLimit.get())   )
-		{
-			motor.set(0);
-		}
+//		else if ((motor.get() < 0 && lowerLimit.get()) ||
+//				 (motor.get() > 0 && upperLimit.get())   )
+//		{
+//			motor.set(0);
+//		}
 
 		if (debug)
 		{

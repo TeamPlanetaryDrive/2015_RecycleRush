@@ -23,14 +23,14 @@ public class RobotConstants {
 
 	// Arm Potentiometer Parameters
 	public static final double
-		ARM_POT_LEFT_RANGE = 270.0,  //FIXME: value needs updating
-		ARM_POT_LEFT_OFFSET = 0.0,  //FIXME: value needs updating
+		ARM_POT_LEFT_RANGE = -270.0,
+		ARM_POT_LEFT_OFFSET = 270.0,
 		ARM_POT_RIGHT_RANGE = -270.0,
 		ARM_POT_RIGHT_OFFSET = 258.0;
 
 	// Arm SpeedController Channels
 	public static final int
-		ARM_SC_LEFT_CHANNEL  = 4,
+		ARM_SC_LEFT_CHANNEL  = 7,
 		ARM_SC_RIGHT_CHANNEL = 5;		
 	
 	// Arm Limit Switch Channels
@@ -90,7 +90,7 @@ public class RobotConstants {
 	public static final int
 		DT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		DT_ACCEL_RATE = 5.0,     // (rev/s^2)
+		DT_ACCEL_RATE = 2,//5.0,     // (rev/s^2)
 		DT_ENC_RESOLUTION = 1/188.3, // (wheel revs: 7 cpr * 26.9)
 		DT_PID_EFFORT_MAX = 1.0, // (0-1)
 		DT_PID_PERIOD = 0.010,   // (s)

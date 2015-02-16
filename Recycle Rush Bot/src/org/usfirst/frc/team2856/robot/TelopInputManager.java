@@ -22,13 +22,17 @@ public class TelopInputManager extends AbstractInputManager {
 				0, ATTACK3_AXIS_X, // left x
 				drive::RDrive, true);
 		
-		this.addButtonAction(1, 8, drive::GyroSetActive, false);   // left 8
-		this.addButtonAction(1, 9, drive::GyroClearActive, false); // left 9
-		this.addButtonAction(0, 3, drive::GyroReset, false);       // right 3
+		this.addButtonAction(0, 8, drive::GyroSetActive, false);   // left 8
+		this.addButtonAction(0, 9, drive::GyroClearActive, false); // left 9
+		this.addButtonAction(1, 3, drive::GyroReset, false);       // right 3
 		
 		this.addButtonAction(0, 6, drive::PidSpeedStart, false);   // left 6
 		this.addButtonAction(0, 7, drive::PidStop, false);         // left 7
 		this.addButtonAction(1, 11, drive::EncoderReset, false);   // right 11
+		
+		// FIXME
+		this.addButtonAction(1, 5, this::fwd2Rev, false);
+		this.addButtonAction(1, 4, this::back2Rev, false);
 		
 		this.addBiAxisAction(
 				2, XBOX_AXIS_LX, // xbox left x
@@ -57,5 +61,12 @@ public class TelopInputManager extends AbstractInputManager {
 		arm.RightPidMoveStart(90);
 	}
 	
+	private void fwd2Rev() {
+		drive.PidMoveStart(2);
+	}
+	
+	private void back2Rev() {
+		drive.PidMoveStart(-2);
+	}
 	
 }
