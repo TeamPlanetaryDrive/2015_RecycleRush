@@ -33,7 +33,7 @@ public class RobotConstants {
 		ARM_SC_LEFT_CHANNEL  = 4,
 		ARM_SC_RIGHT_CHANNEL = 5;		
 	
-	//Arm Limit Switch Channels
+	// Arm Limit Switch Channels
 	public static final int
 		ARM_LIMIT_LEFT_CHANNEL = 13,
 		ARM_LIMIT_RIGHT_CHANNEL = 14; // orig 5
@@ -106,38 +106,49 @@ public class RobotConstants {
 		DT_PID_SPEED_KI = 0.01,
 		DT_PID_SPEED_KD = 0.20;
 
-	//Lift SpeedController Channels
-	public static final int
-		LIFT_SC_CHANNEL = 6;
-	
-	//Lift Encoder Channels
+	// Lift Encoder Channels
 	public static final int
 		LIFT_ENC_CHANNEL_A = 8,
 		LIFT_ENC_CHANNEL_B = 9;
 	
-	//Lift Limit Switch
+	// Lift SpeedController Channels
+	public static final int
+		LIFT_SC_CHANNEL = 6;
+	
+	// Lift Limit Switch
 	public static final int
 		LIFT_LIMIT_LOWER_CHANNEL = 10,
 		LIFT_LIMIT_UPPER_CHANNEL = 11;
 	
-	//Lift Parameters
+	// Lift Encoder Resolution
 	public static final double
-		LIFT_ENC_RESOLUTION = 1/188.3,
-		LIFT_PID_POS_SETTLE = 0.5; // (s)
+		LIFT_ENC_RESOLUTION = 1/188.3; // (sprocket revs: 7 cpr * 26.9)
 	
-	//Lift motor power distribution channel
+	// Lift motor power distribution channel
 	public static final int
 		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;  //FIXME: value needs updating
 	
-	//Lift PID values
+	// Lift Parameters
+	public static final int
+		LIFT_ENC_SAMPLES_TO_AVERAGE = 4;
+	public static final double
+		LIFT_ACCEL_RATE = 5.0,     // (rev/s^2)
+		LIFT_PID_EFFORT_MAX = 0.5, // (0-1)
+		LIFT_PID_PERIOD = 0.010,   // (s)
+		LIFT_PID_POS_SETTLE = 0.5, // (s)
+		LIFT_SPEED_MAX = 2.5;      // (rev/s)
+
+	// Lift PID values
 	public static final double
 		LIFT_KI = 0.2,
 		LIFT_KP = 0.1,
 		LIFT_KD = 0;
 	
-	//height
+	// Lift, Other Parameters
 	public static final double
-		LIFT_HEIGHT = 70;//inches
+		LIFT_HEIGHT = 70,//inches
+		LIFT_HOMING_UP = 0.5,
+		LIFT_HOMING_DOWN = 0.25;
 	
 	// Pivot SpeedController Channel
 	public static final int

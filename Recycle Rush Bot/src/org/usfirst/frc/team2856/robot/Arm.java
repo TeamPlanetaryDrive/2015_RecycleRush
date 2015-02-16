@@ -122,6 +122,7 @@ public class Arm {
 		leftStartPos = leftPot.get();
 		distance = position - leftStartPos;
 		leftRefGen.Start(distance);
+		leftMoveActive = true;
 	}
 
 	public void RightPidMoveStart(double position) {
@@ -154,6 +155,7 @@ public class Arm {
 		rightStartPos = rightPot.get();
 		distance = position - rightStartPos;
 		rightRefGen.Start(distance);
+		rightMoveActive = true;
 	}
 
 	public void LeftPidStop() {
@@ -180,8 +182,8 @@ public class Arm {
 			leftRefGen.Update();
 			if (leftRefGen.IsActive() && !(leftLimit.get() && (leftRefGen.GetRefPosition() < 0)))
 			{
-				double refPos = leftRefGen.GetRefPosition();
-				leftPID.setSetpoint(refPos + leftStartPos);
+				double refPos = leftRefGen.GetRefPosition() + leftStartPos;
+				leftPID.setSetpoint(refPos);
 				if (debug)
 				{
 					table.putNumber("ArmL.PosR", refPos + smallNumber);
@@ -202,8 +204,8 @@ public class Arm {
 			rightRefGen.Update();
 			if (rightRefGen.IsActive() && !(rightLimit.get() && (rightRefGen.GetRefPosition() < 0)))
 			{
-				double refPos = rightRefGen.GetRefPosition();
-				rightPID.setSetpoint(refPos + rightStartPos);
+				double refPos = rightRefGen.GetRefPosition() + rightStartPos;
+				rightPID.setSetpoint(refPos);
 				if (debug)
 				{
 					table.putNumber("ArmR.PosR", refPos + smallNumber);
