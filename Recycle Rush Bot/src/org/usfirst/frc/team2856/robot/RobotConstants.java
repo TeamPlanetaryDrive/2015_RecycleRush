@@ -122,13 +122,15 @@ public class RobotConstants {
 	
 	// Lift Encoder Resolution
 	public static final double
-		LIFT_ENC_RESOLUTION = 1/188.3;
+		LIFT_ENC_RESOLUTION = 1/188.3; // (sprocket revs: 7 cpr * 26.9)
 	
 	// Lift motor power distribution channel
 	public static final int
 		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;  //FIXME: value needs updating
 	
-	// Arm Parameters
+	// Lift Parameters
+	public static final int
+		LIFT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
 		LIFT_ACCEL_RATE = 5.0,     // (rev/s^2)
 		LIFT_PID_EFFORT_MAX = 0.5, // (0-1)
@@ -142,9 +144,11 @@ public class RobotConstants {
 		LIFT_KP = 0.1,
 		LIFT_KD = 0;
 	
-	// height
+	// Lift, Other Parameters
 	public static final double
-		LIFT_HEIGHT = 70;//inches
+		LIFT_HEIGHT = 70,//inches
+		LIFT_HOMING_UP = 0.5,
+		LIFT_HOMING_DOWN = 0.25;
 	
 	// Pivot SpeedController Channel
 	public static final int

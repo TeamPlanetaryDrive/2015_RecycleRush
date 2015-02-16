@@ -42,7 +42,7 @@ public class TelopInputManager extends AbstractInputManager {
 				arm::LeftPidStop, false);
 		this.addButtonAction(2, XBOX_BUTTON_Y, // xbox Y
 				arm::RightPidStop, false);
-		this.addAxisAction(2, 3, lift::Move, false);
+		this.addAxisAction(2, 3, lift::setEffort, false);
 	}
 	
 	private void armsSetEffort(double left, double right) {
