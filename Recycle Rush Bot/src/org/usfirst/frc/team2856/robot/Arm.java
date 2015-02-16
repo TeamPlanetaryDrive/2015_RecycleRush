@@ -17,6 +17,7 @@ public class Arm {
 	private PIDController leftPID;
 	private MoveRefGen leftRefGen;
 	private boolean leftMoveActive;
+	private double leftStartPos;
 
 	// Right arm
 	private AnalogPotentiometer rightPot;
@@ -24,6 +25,7 @@ public class Arm {
 	private PIDController rightPID;
 	private MoveRefGen rightRefGen;
 	private boolean rightMoveActive;
+	private double rightStartPos;
 
 	// Other variables
 	private double smallNumber;
@@ -106,7 +108,8 @@ public class Arm {
 
 		// Configure and start move reference generator
 		leftRefGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
-		distance = position - leftPot.get();
+		leftStartPos = leftPot.get();
+		distance = position - leftStartPos;
 		leftRefGen.Start(distance);
 	}
 
@@ -137,7 +140,8 @@ public class Arm {
 
 		// Configure and start move reference generator
 		rightRefGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
-		distance = position - rightPot.get();
+		rightStartPos = rightPot.get();
+		distance = position - rightStartPos;
 		rightRefGen.Start(distance);
 	}
 
@@ -166,7 +170,7 @@ public class Arm {
 			if (leftRefGen.IsActive())
 			{
 				double refPos = leftRefGen.GetRefPosition();
-				leftPID.setSetpoint(refPos);
+				leftPID.setSetpoint(refPos + leftStartPos);
 				if (debug)
 				{
 					table.putNumber("ArmL.PosR", refPos + smallNumber);
@@ -184,7 +188,7 @@ public class Arm {
 			if (rightRefGen.IsActive())
 			{
 				double refPos = rightRefGen.GetRefPosition();
-				rightPID.setSetpoint(refPos);
+				rightPID.setSetpoint(refPos + rightStartPos);
 				if (debug)
 				{
 					table.putNumber("ArmR.PosR", refPos + smallNumber);
@@ -206,9 +210,9 @@ public class Arm {
 	
 			// Right arm
 			//table.putNumber("ArmR.PosR", rightPot.get() + smallNumber);
-			table.putNumber("ArmR.Pos",  rightPot.get() + smallNumber);
-			table.putNumber("ArmR.Eff",  rightMotor.get() + smallNumber);
-			table.putNumber("ArmR.Cur",  power.getCurrent(RobotConstants.ARM_CUR_RIGHT_CHANNEL) + smallNumber);
+			table.putNumber("FL.Pos",  rightPot.get() + smallNumber);
+			table.putNumber("FL.Eff",  rightMotor.get() + smallNumber);
+			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.ARM_CUR_RIGHT_CHANNEL) + smallNumber);
 		}
 	}
 }

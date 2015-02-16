@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         input.update();
         arm.Update(true);
-        drive.Update(true);
+        drive.Update(false);
         table.putNumber("TotalCurrent", power.getTotalCurrent());
     }
 

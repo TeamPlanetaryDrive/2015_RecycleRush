@@ -38,9 +38,9 @@ public class TelopInputManager extends AbstractInputManager {
 				this::leftPIDMoveStart, false);
 		this.addButtonAction(2, XBOX_BUTTON_B, // xbox B
 				this::rightPIDMoveStart, false);
-		this.addButtonAction(2, ATTACK3_AXIS_X, // xbox X
+		this.addButtonAction(2, XBOX_BUTTON_X, // xbox X
 				arm::LeftPidStop, false);
-		this.addButtonAction(2, ATTACK3_AXIS_Y, // xbox Y
+		this.addButtonAction(2, XBOX_BUTTON_Y, // xbox Y
 				arm::RightPidStop, false);
 		this.addAxisAction(2, 3, lift::Move, false);
 	}
@@ -50,11 +50,11 @@ public class TelopInputManager extends AbstractInputManager {
 	}
 	
 	private void leftPIDMoveStart() {
-		arm.LeftPidMoveStart(0.1);
+		arm.LeftPidMoveStart(90);
 	}
 	
 	private void rightPIDMoveStart() {
-		arm.RightPidMoveStart(0.1);
+		arm.RightPidMoveStart(90);
 	}
 	
 	

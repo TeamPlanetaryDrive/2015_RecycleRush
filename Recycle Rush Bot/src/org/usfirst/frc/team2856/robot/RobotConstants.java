@@ -23,10 +23,10 @@ public class RobotConstants {
 
 	// Arm Potentiometer Parameters
 	public static final double
-		ARM_POT_LEFT_RANGE = 1.0,  //FIXME: value needs updating
-		ARM_POT_RIGHT_RANGE = 1.0,  //FIXME: value needs updating
+		ARM_POT_LEFT_RANGE = 270.0,  //FIXME: value needs updating
 		ARM_POT_LEFT_OFFSET = 0.0,  //FIXME: value needs updating
-		ARM_POT_RIGHT_OFFSET = 0.0;  //FIXME: value needs updating
+		ARM_POT_RIGHT_RANGE = -270.0,
+		ARM_POT_RIGHT_OFFSET = 258.0;
 
 	// Arm SpeedController Channels
 	public static final int
@@ -40,8 +40,8 @@ public class RobotConstants {
 
 	// Arm Current Channels
 	public static final int
-		ARM_CUR_LEFT_CHANNEL  = 1,  //FIXME: value needs updating
-		ARM_CUR_RIGHT_CHANNEL = 1;  //FIXME: value needs updating
+		ARM_CUR_LEFT_CHANNEL  = 8,
+		ARM_CUR_RIGHT_CHANNEL = 14;
 
 	// Arm Parameters
 	public static final double
@@ -108,7 +108,7 @@ public class RobotConstants {
 
 	//Lift SpeedController Channels
 	public static final int
-		LIFT_SC_CHANNEL = 4;
+		LIFT_SC_CHANNEL = 6;
 	
 	//Lift Encoder Channels
 	public static final int

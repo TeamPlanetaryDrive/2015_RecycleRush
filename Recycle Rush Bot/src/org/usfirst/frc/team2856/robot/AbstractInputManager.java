@@ -24,7 +24,7 @@ public abstract class AbstractInputManager {
 			
 			XBOX_BUTTON_A      = 1,
 			XBOX_BUTTON_B      = 2,
-			XBOX_BUTOTN_X      = 3,
+			XBOX_BUTTON_X      = 3,
 			XBOX_BUTTON_Y      = 4,
 			XBOX_BUTTON_LBUMP  = 5,
 			XBOX_BUTTON_RBUMP  = 6,
