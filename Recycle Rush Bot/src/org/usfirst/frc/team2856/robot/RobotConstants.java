@@ -18,8 +18,8 @@ public class RobotConstants {
 
 	// Arm Potentiometer Channels
 	public static final int
-		ARM_POT_LEFT_CHANNEL = 1,  //FIXME: value needs checking
-		ARM_POT_RIGHT_CHANNEL = 2;  //FIXME: value needs checking
+		ARM_POT_LEFT_CHANNEL = 1,
+		ARM_POT_RIGHT_CHANNEL = 2;
 
 	// Arm Potentiometer Parameters
 	public static final double
@@ -45,17 +45,17 @@ public class RobotConstants {
 
 	// Arm Parameters
 	public static final double
-		ARM_ACCEL_RATE = 5.0,     // (rev/s^2)
+		ARM_ACCEL_RATE = 30,     // (deg/s^2)
 		ARM_PID_EFFORT_MAX = 0.5, // (0-1)
 		ARM_PID_PERIOD = 0.010,   // (s)
 		ARM_PID_POS_SETTLE = 0.5, // (s)
-		ARM_SPEED_MAX = 2.5;      // (rev/s)
+		ARM_SPEED_MAX = 30;      // (deg/s)
 
 	// Arm PID Gains
 	public static final double
-		ARM_PID_KP = 2.00,
-		ARM_PID_KI = 0.01,
-		ARM_PID_KD = 1.00;
+		ARM_PID_KP = 0.02,
+		ARM_PID_KI = 0.002,
+		ARM_PID_KD = 0.0;
 
 	// Drive Train Gyro Channel
 	public static final int
@@ -90,12 +90,12 @@ public class RobotConstants {
 	public static final int
 		DT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		DT_ACCEL_RATE = 2,//5.0,     // (rev/s^2)
-		DT_ENC_RESOLUTION = 1/188.3, // (wheel revs: 7 cpr * 26.9)
+		DT_ACCEL_RATE = 5.0,     // (ft/s^2)
+		DT_ENC_RESOLUTION = 1/295.8, // (wheel revs: 7 cpr * 26.9 * 1.571 feet)
 		DT_PID_EFFORT_MAX = 1.0, // (0-1)
 		DT_PID_PERIOD = 0.010,   // (s)
 		DT_PID_POS_SETTLE = 0.5, // (s)
-		DT_SPEED_MAX = 2;      // (rev/s)
+		DT_SPEED_MAX = 2;        // (ft/s)
 
 	// Drive Train PID Gains
 	public static final double
@@ -120,28 +120,25 @@ public class RobotConstants {
 		LIFT_LIMIT_LOWER_CHANNEL = 10,
 		LIFT_LIMIT_UPPER_CHANNEL = 11;
 	
-	// Lift Encoder Resolution
-	public static final double
-		LIFT_ENC_RESOLUTION = 1/188.3; // (sprocket revs: 7 cpr * 26.9)
-	
 	// Lift motor power distribution channel
 	public static final int
-		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;  //FIXME: value needs updating
+		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;
 	
 	// Lift Parameters
 	public static final int
 		LIFT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		LIFT_ACCEL_RATE = 5.0,     // (rev/s^2)
+		LIFT_ACCEL_RATE = 25.0,    // (in/s^2)
+		LIFT_ENC_RESOLUTION = (1/894.4), // (travel, inches: 7 cpr * 26.9 * 0.25 inch * 19 teeth)
 		LIFT_PID_EFFORT_MAX = 0.5, // (0-1)
 		LIFT_PID_PERIOD = 0.010,   // (s)
 		LIFT_PID_POS_SETTLE = 0.5, // (s)
-		LIFT_SPEED_MAX = 2.5;      // (rev/s)
+		LIFT_SPEED_MAX = 10.0;     // (in/s)
 
 	// Lift PID values
 	public static final double
-		LIFT_KI = 0.2,
-		LIFT_KP = 0.1,
+		LIFT_KI = 0.04,
+		LIFT_KP = 0.004,
 		LIFT_KD = 0;
 	
 	// Lift, Other Parameters
