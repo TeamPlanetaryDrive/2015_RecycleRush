@@ -171,7 +171,7 @@ public class RobotConstants {
 	
 	// CWEIGHT Encoder Resolution
 	public static final double
-		CWEIGHT_ENC_RESOLUTION = 1/188.3; //FIXME (sprocket revs: 7 cpr * 26.9)
+		CWEIGHT_ENC_RESOLUTION = 1.0; //FIXME
 	
 	// CWEIGHT motor power distribution channel
 	public static final int
@@ -181,16 +181,16 @@ public class RobotConstants {
 	public static final int
 		CWEIGHT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		CWEIGHT_ACCEL_RATE = 5.0,     // (rev/s^2)
-		CWEIGHT_PID_EFFORT_MAX = 0.5, // (0-1)
-		CWEIGHT_PID_PERIOD = 0.010,   // (s)
-		CWEIGHT_PID_POS_SETTLE = 0.5, // (s)
-		CWEIGHT_SPEED_MAX = 2.5;      // (rev/s)
+		CWEIGHT_ACCEL_RATE = 5.0,      // (in/s^2)
+		CWEIGHT_PID_EFFORT_MAX = 0.25, // (0-1)
+		CWEIGHT_PID_PERIOD = 0.010,    // (s)
+		CWEIGHT_PID_POS_SETTLE = 0.5,  // (s)
+		CWEIGHT_SPEED_MAX = 5.0;       // (in/s)
 
 	// CWEIGHT PID values
 	public static final double
-		CWEIGHT_KI = 0.2,
-		CWEIGHT_KP = 0.1,
+		CWEIGHT_KI = 0.1,  //FIXME
+		CWEIGHT_KP = 0.01, //FIXME
 		CWEIGHT_KD = 0;
 	
 	// CWEIGHT, Other Parameters

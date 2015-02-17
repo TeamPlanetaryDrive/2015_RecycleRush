@@ -1,37 +1,35 @@
 package org.usfirst.frc.team2856.robot;
 
 public class AutoInputManager extends AbstractInputManager {
-	public static final int
-		STATE_IDLE = 0,
-		STATE_ACTIVE = 1;
-	
 	private Arm arm;
+	private CounterWeight cWeight;
 	private Drive drive;
 	private Lift lift;
+	private Pivot pivot;
 
-	private int state;
 	private int action;
 	
-	public AutoInputManager(Arm armIn, Drive driveIn, Lift liftIn) {
-		arm = armIn;
-		drive = driveIn;
-		lift = liftIn;
+	public AutoInputManager(Arm arm, CounterWeight cWeight, Drive drive, Lift lift, Pivot pivot) {
+		this.arm = arm;
+		this.cWeight = cWeight;
+		this.drive = drive;
+		this.lift = lift;
+		this.pivot = pivot;
 		
-		state = STATE_IDLE;
 		action = 0;
 	}
 
 	@Override
 	public void preUpdate() {
-		if(drive.IsMoveActive())
-			state = STATE_ACTIVE;
-		else
-			state = STATE_IDLE;
-		
-		if(state == STATE_IDLE) {
+		if( !arm.IsLeftMoveActive() &&
+			!arm.IsRightMoveActive() &&
+			!cWeight.IsMoveActive() &&
+			!drive.IsMoveActive() &&
+			!lift.IsMoveActive() &&
+			!pivot.IsMoveActive()) {
 			switch(action++) {
-			case 0: drive.PidMoveStart(2); break;
-			case 1: drive.PidMoveStart(-2); break;
+				case 0: drive.PidMoveStart(2); break;
+				case 1: drive.PidMoveStart(-2); break;
 			}
 		}
 	}
