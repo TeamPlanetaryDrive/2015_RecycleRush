@@ -8,21 +8,25 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class Robot extends IterativeRobot {
     private AbstractInputManager input;
     private Arm arm;
+    private CounterWeight cWeight;
     private Drive drive;
     private Lift lift;
+    private Pivot pivot;
     private NetworkTable table;
     private PowerDistributionPanel power;
 
 	public void robotInit() {
-		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
-		arm   = new Arm();
-		drive = new Drive();
-		lift  = new Lift();
-		power = new PowerDistributionPanel();
+		table   = NetworkTable.getTable(RobotConstants.NT_SOURCE);
+		arm     = new Arm();
+		cWeight = new CounterWeight();
+		drive   = new Drive();
+		lift    = new Lift();
+		pivot   = new Pivot();
+		power   = new PowerDistributionPanel();
     }
 
     public void autonomousInit() {
-    	input = new AutoInputManager(arm, drive, lift);
+    	input = new AutoInputManager(arm, cWeight, drive, lift, pivot);
     }
 
     public void autonomousPeriodic() {
@@ -39,7 +43,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-        input = new TelopInputManager(arm, drive, lift);
+        input = new TelopInputManager(arm, cWeight, drive, lift, pivot);
     }
 
     public void teleopPeriodic() {
@@ -50,7 +54,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void testInit() {
-    	input = new TelopInputManager(arm, drive, lift);
+    	input = new TelopInputManager(arm, cWeight, drive, lift, pivot);
     }
 
     public void testPeriodic() {

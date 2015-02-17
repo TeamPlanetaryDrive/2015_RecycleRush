@@ -16,6 +16,10 @@ public class Pivot {
 		closedSwitch = new DigitalInput(RobotConstants.PIVOT_LIMIT_CHANNEL);
 	}
 	
+	public boolean IsMoveActive() {
+		return false;
+	}
+	
 	public void Move(double input){
 		//if closed, only allow to move down
 		if(closedSwitch.get()){
