@@ -35,8 +35,8 @@ public class RobotConstants {
 	
 	// Arm Limit Switch Channels
 	public static final int
-		ARM_LIMIT_LEFT_CHANNEL = 13,
-		ARM_LIMIT_RIGHT_CHANNEL = 14; // orig 5
+		ARM_LIMIT_LEFT_CHANNEL = 12,
+		ARM_LIMIT_RIGHT_CHANNEL = 13; // orig 5
 
 	// Arm Current Channels
 	public static final int
@@ -156,5 +156,5 @@ public class RobotConstants {
 
 	// Pivot Limit Switch Channel
 	public static final int
-		PIVOT_LIMIT_CHANNEL = 6;
+		PIVOT_LIMIT_CHANNEL = 14;
 }
