@@ -35,8 +35,8 @@ public class TelopInputManager extends AbstractInputManager {
 		this.addButtonAction(1, 11, drive::EncoderReset, false);   // right 11
 		
 		// FIXME
-		this.addButtonAction(1, 5, this::fwd2Rev, false);
-		this.addButtonAction(1, 4, this::back2Rev, false);
+		//this.addButtonAction(1, 5, this::fwd2Rev, false);
+		//this.addButtonAction(1, 4, this::back2Rev, false);
 		
 		this.addBiAxisAction(
 				2, XBOX_AXIS_LX, // xbox left x
