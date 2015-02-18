@@ -50,7 +50,13 @@ public class TelopInputManager extends AbstractInputManager {
 				arm::LeftPidStop, false);
 		this.addButtonAction(2, XBOX_BUTTON_Y, // xbox Y
 				arm::RightPidStop, false);
-		this.addAxisAction(2, 3, lift::setEffort, false);
+		this.addBiAxisAction(
+				2, XBOX_AXIS_LTRIGGER,
+				2, XBOX_AXIS_RTRIGGER,
+				this::liftEffort, false);
+		this.addButtonAction(2, XBOX_BUTTON_LBUMP, liftMove(12), false);
+		this.addButtonAction(2, XBOX_BUTTON_RBUMP, liftMove(24), false);
+		this.addButtonAction(2, XBOX_BUTTON_BACK, lift::PidStop, false);
 	}
 	
 	private void armsSetEffort(double left, double right) {
@@ -73,4 +79,11 @@ public class TelopInputManager extends AbstractInputManager {
 		drive.PidMoveStart(-2);
 	}
 	
+	private Runnable liftMove(int num) {
+		return () -> { lift.PidMoveStart(num); };
+	}
+	
+	private void liftEffort(double left, double right) {
+		lift.setEffort(right - left);
+	}
 }

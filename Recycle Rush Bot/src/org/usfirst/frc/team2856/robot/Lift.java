@@ -36,7 +36,7 @@ public class Lift {
 		// PID controller gains will be updated prior to enabling the controllers
 		encoder = new Encoder(RobotConstants.LIFT_ENC_CHANNEL_A, RobotConstants.LIFT_ENC_CHANNEL_B, false, EncodingType.k4X);
 		motor = new Jaguar(RobotConstants.LIFT_SC_CHANNEL);
-		pid = new PIDController(0, 0, 0, encoder, motor, RobotConstants.ARM_PID_PERIOD);
+		pid = new PIDController(0, 0, 0, encoder, motor, RobotConstants.LIFT_PID_PERIOD);
 		lowerLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_LOWER_CHANNEL);
 		upperLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_UPPER_CHANNEL);
 		
@@ -50,18 +50,18 @@ public class Lift {
 		encoder.reset();
 
 		// Set PID output range
-		pid.setOutputRange (-RobotConstants.ARM_PID_EFFORT_MAX, RobotConstants.ARM_PID_EFFORT_MAX);
+		pid.setOutputRange (-RobotConstants.LIFT_PID_EFFORT_MAX_DOWN, RobotConstants.LIFT_PID_EFFORT_MAX_UP);
 
 		// PID move initialization
 		moveActive = false;
 		refGen = new MoveRefGen();
 
 		// Set initial network table values
-		table.putNumber("Arm.AccelRate", RobotConstants.ARM_ACCEL_RATE);
-		table.putNumber("Arm.MaxSpeed", RobotConstants.ARM_SPEED_MAX);
-		table.putNumber("Arm.Pos.Kp", RobotConstants.ARM_PID_KP);
-		table.putNumber("Arm.Pos.Ki", RobotConstants.ARM_PID_KI);
-		table.putNumber("Arm.Pos.Kd", RobotConstants.ARM_PID_KD);
+		table.putNumber("Lift.AccelRate", RobotConstants.LIFT_ACCEL_RATE);
+		table.putNumber("Lift.MaxSpeed", RobotConstants.LIFT_SPEED_MAX);
+		table.putNumber("Lift.Kp", RobotConstants.LIFT_PID_KP);
+		table.putNumber("Lift.Ki", RobotConstants.LIFT_PID_KI);
+		table.putNumber("Lift.Kd", RobotConstants.LIFT_PID_KD);
 		
 		// Set other parameters
 		PIDon = false;
@@ -118,11 +118,11 @@ public class Lift {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("Arm.Kp");
-		Ki = table.getNumber("Arm.Ki");
-		Kd = table.getNumber("Arm.Kd");
-		accelRate = table.getNumber("Arm.AccelRate");
-		maxSpeed = table.getNumber("Arm.MaxSpeed");
+		Kp = table.getNumber("Lift.Kp");
+		Ki = table.getNumber("Lift.Ki");
+		Kd = table.getNumber("Lift.Kd");
+		accelRate = table.getNumber("Lift.AccelRate");
+		maxSpeed = table.getNumber("Lift.MaxSpeed");
 
 		// Reset PID controller
 		pid.reset();
@@ -155,27 +155,32 @@ public class Lift {
 		moveActive = false;
 	}
 
+	public void PidDone() {
+		// Position move finished
+		moveActive = false;
+	}
+	
 	public void Update(boolean debug) {
 		smallNumber = (smallNumber == 0) ? 0.001: 0;
 		
 		if (moveActive)
 		{
 			refGen.Update();
-			if (refGen.IsActive() && (
+			if (refGen.IsActive()/* && (
 				(refGen.GetRefPosition() < 0 && !lowerLimit.get()) ||
 				(refGen.GetRefPosition() > 0 && !upperLimit.get())	)
-			   )
+			  */ )
 			{
 				double refPos = refGen.GetRefPosition() + startPos;
 				pid.setSetpoint(refPos);
 				if (debug)
 				{
-					table.putNumber("Arm.PosR", refPos + smallNumber);
+					table.putNumber("RL.VelR", refPos + smallNumber);
 				}
 			}
 			else
 			{
-				PidStop();
+				PidDone();
 			}
 		}
 //		else if ((motor.get() < 0 && lowerLimit.get()) ||
@@ -186,12 +191,12 @@ public class Lift {
 
 		if (debug)
 		{
-			//table.putNumber("Arm.PosR", encoder.getDistance() + smallNumber);
-			table.putNumber("Arm.Pos",  encoder.getDistance() + smallNumber);
-			//table.putNumber("Arm.VelR", pid.getSetpoint() + smallNumber);
-			table.putNumber("Arm.Vel",  encoder.getRate() + smallNumber);
-			table.putNumber("Arm.Eff",  motor.get() + smallNumber);
-			table.putNumber("Arm.Cur",  power.getCurrent(RobotConstants.LIFT_MOTOR_POWERPANEL_CHANNEL) + smallNumber);
+			//table.putNumber("Lift.PosR", encoder.getDistance() + smallNumber);
+			table.putNumber("FL.VelR",  encoder.getDistance() + smallNumber);
+			//table.putNumber("Lift.VelR", pid.getSetpoint() + smallNumber);
+			table.putNumber("FL.Vel",  encoder.getRate() + smallNumber);
+			table.putNumber("FL.Eff",  motor.get() + smallNumber);
+			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.LIFT_MOTOR_POWERPANEL_CHANNEL) + smallNumber);
 			}
 	}
 }

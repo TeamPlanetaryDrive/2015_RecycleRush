@@ -28,8 +28,8 @@ public class AutoInputManager extends AbstractInputManager {
 			!lift.IsMoveActive() &&
 			!pivot.IsMoveActive()) {
 			switch(action++) {
-				case 0: drive.PidMoveStart(2); break;
-				case 1: drive.PidMoveStart(-2); break;
+				//case 0: drive.PidMoveStart(3); break;
+				//case 1: drive.PidMoveStart(-3); break;
 			}
 		}
 	}

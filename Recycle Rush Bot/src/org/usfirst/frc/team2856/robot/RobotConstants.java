@@ -30,8 +30,8 @@ public class RobotConstants {
 
 	// Arm SpeedController Channels
 	public static final int
-		ARM_SC_LEFT_CHANNEL  = 7,
-		ARM_SC_RIGHT_CHANNEL = 5;		
+		ARM_SC_LEFT_CHANNEL  = 5,
+		ARM_SC_RIGHT_CHANNEL = 6;		
 	
 	// Arm Limit Switch Channels
 	public static final int
@@ -91,7 +91,7 @@ public class RobotConstants {
 		DT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
 		DT_ACCEL_RATE = 5.0,     // (ft/s^2)
-		DT_ENC_RESOLUTION = 1/295.8, // (wheel revs: 7 cpr * 26.9 * 1.571 feet)
+		DT_ENC_RESOLUTION = 1.571/188.3, // (distance, feet: 1.571/(7 cpr * 26.9))
 		DT_PID_EFFORT_MAX = 1.0, // (0-1)
 		DT_PID_PERIOD = 0.010,   // (s)
 		DT_PID_POS_SETTLE = 0.5, // (s)
@@ -113,7 +113,7 @@ public class RobotConstants {
 	
 	// Lift SpeedController Channels
 	public static final int
-		LIFT_SC_CHANNEL = 6;
+		LIFT_SC_CHANNEL = 4;
 	
 	// Lift Limit Switch
 	public static final int
@@ -122,24 +122,25 @@ public class RobotConstants {
 	
 	// Lift motor power distribution channel
 	public static final int
-		LIFT_MOTOR_POWERPANEL_CHANNEL = 1;
+		LIFT_MOTOR_POWERPANEL_CHANNEL = 14;
 	
 	// Lift Parameters
 	public static final int
 		LIFT_ENC_SAMPLES_TO_AVERAGE = 4;
 	public static final double
-		LIFT_ACCEL_RATE = 25.0,    // (in/s^2)
-		LIFT_ENC_RESOLUTION = (1/894.4), // (travel, inches: 7 cpr * 26.9 * 0.25 inch * 19 teeth)
-		LIFT_PID_EFFORT_MAX = 0.5, // (0-1)
+		LIFT_ACCEL_RATE = 2.0,    // (in/s^2)
+		LIFT_ENC_RESOLUTION = (4.75/188.3), // (travel, inches: (0.25 inch * 19 teeth)/(7 cpr * 26.9))
+		LIFT_PID_EFFORT_MAX_UP   = 1.00, // (0-1)
+		LIFT_PID_EFFORT_MAX_DOWN = 0.25, // (0-1)
 		LIFT_PID_PERIOD = 0.010,   // (s)
 		LIFT_PID_POS_SETTLE = 0.5, // (s)
-		LIFT_SPEED_MAX = 10.0;     // (in/s)
+		LIFT_SPEED_MAX = 4.0;     // (in/s)
 
 	// Lift PID values
 	public static final double
-		LIFT_KI = 0.04,
-		LIFT_KP = 0.004,
-		LIFT_KD = 0;
+		LIFT_PID_KP = 0.04,
+		LIFT_PID_KI = 0.002,
+		LIFT_PID_KD = 0;
 	
 	// Lift, Other Parameters
 	public static final double
@@ -149,7 +150,7 @@ public class RobotConstants {
 	
 	// Pivot SpeedController Channel
 	public static final int
-		PIVOT_SC_CHANNEL = 6;
+		PIVOT_SC_CHANNEL = 7;
 
 	// Pivot Limit Switch Channel
 	public static final int

@@ -180,7 +180,7 @@ public class Arm {
 		if (leftMoveActive)
 		{
 			leftRefGen.Update();
-			if (leftRefGen.IsActive() && !(leftLimit.get() && (leftRefGen.GetRefPosition() < 0)))
+			if (leftRefGen.IsActive() /*&& !(leftLimit.get() && (leftRefGen.GetRefPosition() < 0))*/)
 			{
 				double refPos = leftRefGen.GetRefPosition() + leftStartPos;
 				leftPID.setSetpoint(refPos);
@@ -202,7 +202,7 @@ public class Arm {
 		if (rightMoveActive)
 		{
 			rightRefGen.Update();
-			if (rightRefGen.IsActive() && !(rightLimit.get() && (rightRefGen.GetRefPosition() < 0)))
+			if (rightRefGen.IsActive()/* && !(rightLimit.get() && (rightRefGen.GetRefPosition() < 0))*/)
 			{
 				double refPos = rightRefGen.GetRefPosition() + rightStartPos;
 				rightPID.setSetpoint(refPos);
