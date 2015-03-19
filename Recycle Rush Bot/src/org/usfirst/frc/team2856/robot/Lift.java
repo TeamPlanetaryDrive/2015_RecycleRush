@@ -1,75 +1,120 @@
 package org.usfirst.frc.team2856.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Lift {
-	//Basic vars
 	private NetworkTable table;
-    private Encoder enc;
-    private SpeedController motor;
-    PowerDistributionPanel pdp;
-    DigitalInput lowerSwitch, upperSwitch;
-    
-    //PID vars
-    private PIDController pid;
-    private PidSpeedController control;
-    private double
-    	Kp = RobotConstants.LIFT_PID_KP,
-    	Ki = RobotConstants.LIFT_PID_KI,
-    	Kd = RobotConstants.LIFT_PID_KD;
-    
-    private boolean PIDon = false;
-    
-    //misc vars
-    private boolean moveActive;
- 	private MoveRefGen refGen;
- 	private double smallNumber;
+	private PowerDistributionPanel power;
+	private Encoder encoder;
+	private SpeedController motor;
+	private PIDController pid;
+	private DigitalInput lowerLimit;
+	private DigitalInput upperLimit;
+	
+	private boolean moveActive;
+	private MoveRefGen refGen;
+	private double startPos;
+	private double smallNumber;
+    private boolean PIDon;
     
  	//move vars
- 	private double distFromOrigin;//assuming origin is the bottom
- 	private double totalDist  = RobotConstants.LIFT_HEIGHT;//inches
- 	private double target;
- 	
-	public Lift(){
-		//Instantiate Variables
+ 	private double distFromOrigin; //assuming origin is the bottom
+ 	private double totalDist; //inches
+
+	public Lift() {
 		table = NetworkTable.getTable(RobotConstants.NT_SOURCE);
-		
-		enc = new Encoder(RobotConstants.LIFT_ENC_CHANNEL_A, RobotConstants.LIFT_ENC_CHANNEL_B);
+		power = new PowerDistributionPanel();
+
+		// PID controller gains will be updated prior to enabling the controllers
+		encoder = new Encoder(RobotConstants.LIFT_ENC_CHANNEL_A, RobotConstants.LIFT_ENC_CHANNEL_B, false, EncodingType.k4X);
 		motor = new Jaguar(RobotConstants.LIFT_SC_CHANNEL);
-		lowerSwitch = new DigitalInput(RobotConstants.LIFT_LIMIT_LOWER_CHANNEL);
-		upperSwitch = new DigitalInput(RobotConstants.LIFT_LIMIT_UPPER_CHANNEL);
+		pid = new PIDController(0, 0, 0, encoder, motor, RobotConstants.LIFT_PID_PERIOD);
+		lowerLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_LOWER_CHANNEL);
+		upperLimit = new DigitalInput(RobotConstants.LIFT_LIMIT_UPPER_CHANNEL);
 		
-		//@param Kp, Ki, Kd, PIDSource, PIDOutput
-		pid = new PIDController(Ki, Kp, Kd, enc, motor);
-		
-		//Start Variables
-		enc.reset();
-		enc.setDistancePerPulse(RobotConstants.LIFT_ENC_RESOLUTION);
-		enc.setPIDSourceParameter(PIDSourceParameter.kDistance);
-		
-		//instantiate PidSpeedController as an intermediate variable
-		control = new PidSpeedController(pid, motor);
-		
+		// Set encoder resolution
+		encoder.setDistancePerPulse(RobotConstants.LIFT_ENC_RESOLUTION);
+
+		// Set encoder samples to average
+		encoder.setSamplesToAverage(RobotConstants.LIFT_ENC_SAMPLES_TO_AVERAGE);
+
+		// Start encoder
+		encoder.reset();
+
+		// Set PID output range
+		pid.setOutputRange (-RobotConstants.LIFT_PID_EFFORT_MAX_DOWN, RobotConstants.LIFT_PID_EFFORT_MAX_UP);
+
 		// PID move initialization
 		moveActive = false;
 		refGen = new MoveRefGen();
-		
-		//move vars
-		distFromOrigin = 0;
-	}
-	
 
-	public void PIDMoveStart(double dist){
+		// Set initial network table values
+		table.putNumber("Lift.AccelRate", RobotConstants.LIFT_ACCEL_RATE);
+		table.putNumber("Lift.MaxSpeed", RobotConstants.LIFT_SPEED_MAX);
+		table.putNumber("Lift.Kp", RobotConstants.LIFT_PID_KP);
+		table.putNumber("Lift.Ki", RobotConstants.LIFT_PID_KI);
+		table.putNumber("Lift.Kd", RobotConstants.LIFT_PID_KD);
+		
+		// Set other parameters
+		PIDon = false;
+		distFromOrigin = 0;
+		totalDist = RobotConstants.LIFT_HEIGHT;
+	}
+
+	public void setEffort(double effort) {
+		if (!moveActive)
+		{
+//			if ((effort < 0 && !lowerLimit.get()) ||
+//				(effort > 0 && !upperLimit.get())   )
+//			{
+				motor.set(effort);
+//			}
+//			else
+//			{
+//				motor.set(0);
+//			}
+		}
+	}
+
+	public void EncoderReset() {
+        encoder.reset();
+	}
+
+	public boolean IsMoveActive() {
+		return moveActive;
+	}
+
+	/*move to specific location*/
+	public void moveToTop(){
+		if(!upperLimit.get()){
+			if(PIDon)
+				PidMoveStart(totalDist - distFromOrigin);//find out distance
+			else
+				setEffort(RobotConstants.LIFT_HOMING_UP);
+		}
+	}
+
+	public void moveToBottom(){
+		if(!lowerLimit.get()){
+			if(PIDon)
+				PidMoveStart(-distFromOrigin);//find out distance
+			else
+				setEffort(RobotConstants.LIFT_HOMING_DOWN);
+		}
+	}
+
+	public void PidMoveStart(double position) {
 		double Kp, Ki, Kd;
 		double accelRate;
+		double distance;
 		double maxSpeed;
 
 		// Update local parameters
@@ -82,146 +127,76 @@ public class Lift {
 		// Reset PID controller
 		pid.reset();
 
-		// Reset encoders
-        enc.reset();
-        
+        // Set encoders to output position to PID controller
+		encoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+
 		// Set PID parameters
 		pid.setPID(Kp, Ki, Kd);
 
 		// Set PID set points to zero
 		pid.setSetpoint(0);
-		
+
 		// Enable PID controllers
 		pid.enable();
 
 		// Configure and start move reference generator
-		refGen.Configure(accelRate, maxSpeed, RobotConstants.LIFT_PID_POS_SETTLE);
-		refGen.Start(dist);
-		
-		// Position move active
+		refGen.Configure(accelRate, maxSpeed, RobotConstants.DT_PID_POS_SETTLE);
+		startPos = encoder.get();
+		distance = position - startPos;
+		refGen.Start(distance);
 		moveActive = true;
 	}
-	
-	public void PIDStop(){
-		//disable pid
+
+	public void PidStop() {
+		// Disable PID controller
 		pid.disable();
-		
+
+		// Position move finished
+		moveActive = false;
+	}
+
+	public void PidDone() {
 		// Position move finished
 		moveActive = false;
 	}
 	
-	public double EncoderGetPosition(){
-		return enc.getDistance();
-	}
-
-	public void EncoderReset(){
-		enc.reset();
-	}
-	
-	public void Update(boolean debug){
-		
+	public void Update(boolean debug) {
 		smallNumber = (smallNumber == 0) ? 0.001: 0;
 		
-		//if there is a move active
-		if (moveActive){
-			//update the reference generator
+		if (moveActive)
+		{
 			refGen.Update();
-			
-			if (refGen.IsActive()){
-				//get and set reference position
-				double refPos = refGen.GetRefPosition();
+			if (refGen.IsActive()/* && (
+				(refGen.GetRefPosition() < 0 && !lowerLimit.get()) ||
+				(refGen.GetRefPosition() > 0 && !upperLimit.get())	)
+			  */ )
+			{
+				double refPos = refGen.GetRefPosition() + startPos;
 				pid.setSetpoint(refPos);
-				
-				if (debug){
-					table.putNumber("Lift.PosR", refPos + smallNumber);
+				if (debug)
+				{
+					table.putNumber("RL.VelR", refPos + smallNumber);
 				}
 			}
-			else{
-				PIDStop();
+			else
+			{
+				PidDone();
 			}
 		}
+//		else if ((motor.get() < 0 && lowerLimit.get()) ||
+//				 (motor.get() > 0 && upperLimit.get())   )
+//		{
+//			motor.set(0);
+//		}
 
-		
-		if (debug){
-			//update table
-			
-			//table.putNumber("Lift.PosR", enc.getDistance() + smallNumber);
-			table.putNumber("Lift.Pos",  enc.getDistance() + smallNumber);
-			table.putNumber("Lift.VelR", pid.getSetpoint() + smallNumber);
-			table.putNumber("Lift.Vel",  enc.getRate() + smallNumber);
-			table.putNumber("Lift.Eff",  motor.get() + smallNumber);
-			table.putNumber("Lift.Cur",  pdp.getCurrent(RobotConstants.LIFT_MOTOR_POWERPANEL_CHANNEL) + smallNumber);
-		}
-		distFromOrigin += enc.getDistance();
-	}
-	
-	public void Move(double effort){
-		
-		if (lowerSwitch.get() || upperSwitch.get()) {//if a switch is pressed
-			//if lower limit is pressed only let this go up
-			if (lowerSwitch.get()) {
-				if (effort < 0)
-					motor.set(0);
-				else
-					motor.set(effort);
+		if (debug)
+		{
+			//table.putNumber("Lift.PosR", encoder.getDistance() + smallNumber);
+			table.putNumber("FL.VelR",  encoder.getDistance() + smallNumber);
+			//table.putNumber("Lift.VelR", pid.getSetpoint() + smallNumber);
+			table.putNumber("FL.Vel",  encoder.getRate() + smallNumber);
+			table.putNumber("FL.Eff",  motor.get() + smallNumber);
+			table.putNumber("FL.Cur",  power.getCurrent(RobotConstants.LIFT_MOTOR_POWERPANEL_CHANNEL) + smallNumber);
 			}
-			//if upper limit is pressed only let it go down
-			if (upperSwitch.get()) {
-				if (effort > 0)
-					motor.set(0);
-				else
-					motor.set(effort);
-			}
-		}else{//no switch is pressed
-			motor.set(effort);
-		}
-	}
-	
-	/*move to specific location*/
-	public void moveToTop(){
-		if(!upperSwitch.get()){
-			if(PIDon)
-				PIDMoveStart(totalDist - distFromOrigin);//find out distance
-			else
-				moveDist(totalDist - distFromOrigin);
-		}
-	}
-	
-	public void moveToBottom(){
-		if(!lowerSwitch.get()){
-			if(PIDon)
-				PIDMoveStart(-distFromOrigin);//find out distance
-			else
-				moveDist(-distFromOrigin);
-		}
-	}
-	
-	/*FIX THIS FOR DISTANCE*/
-	public void moveDist(double dist){
-		target = dist += distFromOrigin;
-		if (lowerSwitch.get() || upperSwitch.get()) {//if a switch is pressed
-			//if lower limit is pressed only let this go up
-			if (lowerSwitch.get()) {
-				if(dist < 0){
-					distFromOrigin += enc.getDistance();
-					dist = 0;
-					enc.reset();
-				}
-			}
-			//if upper limit is pressed only let it go down
-			if (upperSwitch.get()) {
-				if(dist > 0){
-				distFromOrigin += enc.getDistance();
-				dist = 0;
-				enc.reset();
-			}
-			}else{//no switch is pressed
-				if(target < distFromOrigin){
-					motor.set(-.07);
-				}else if(target > distFromOrigin){
-					motor.set(.07);
-				}
-			}
-		}
 	}
 }
