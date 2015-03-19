@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends IterativeRobot {
     private AbstractInputManager input;
-    private Arm arm;
+//  private Arm arm;
     private CounterWeight cWeight;
     private Drive drive;
     private Lift lift;
@@ -17,7 +17,7 @@ public class Robot extends IterativeRobot {
 
 	public void robotInit() {
 		table   = NetworkTable.getTable(RobotConstants.NT_SOURCE);
-		arm     = new Arm();
+//		arm     = new Arm();
 		cWeight = new CounterWeight();
 		drive   = new Drive();
 		lift    = new Lift();
@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void autonomousInit() {
-    	input = new AutoInputManager(arm, cWeight, drive, lift, pivot);
+    	input = new AutoInputManager(/*arm, */cWeight, drive, lift, pivot);
     }
 
     public void autonomousPeriodic() {
@@ -43,23 +43,23 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-        input = new TelopInputManager(arm, cWeight, drive, lift, pivot);
+        input = new TelopInputManager(/*arm, */cWeight, drive, lift, pivot);
     }
 
     public void teleopPeriodic() {
         input.update();
-        arm.Update(false);
+//      arm.Update(false);
         drive.Update(false);
         lift.Update(false);
     }
 
     public void testInit() {
-    	input = new TelopInputManager(arm, cWeight, drive, lift, pivot);
+    	input = new TelopInputManager(/*arm, */cWeight, drive, lift, pivot);
     }
 
     public void testPeriodic() {
         input.update();
-        arm.Update(false);
+//      arm.Update(false);
         drive.Update(false);
         lift.Update(true);
         table.putNumber("TotalCurrent", power.getTotalCurrent());

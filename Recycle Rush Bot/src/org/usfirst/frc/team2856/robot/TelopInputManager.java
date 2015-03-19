@@ -3,18 +3,18 @@ package org.usfirst.frc.team2856.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class TelopInputManager extends AbstractInputManager {
-	private Arm arm;
+	//private Arm arm;
 	private CounterWeight cWeight;
 	private Drive drive;
 	private Lift lift;
 	private Pivot pivot;
 
-	public TelopInputManager(Arm arm, CounterWeight cWeight, Drive drive, Lift lift, Pivot pivot) {
+	public TelopInputManager(/*Arm arm, */CounterWeight cWeight, Drive drive, Lift lift, Pivot pivot) {
 		super(new Joystick(RobotConstants.IM_JOYSTICK_LEFT),    // left = 0
 				new Joystick(RobotConstants.IM_JOYSTICK_RIGHT), // right = 1
 				new Joystick(RobotConstants.IM_XBOX_CONTROLLER)); // xbox = 2
 		
-		this.arm = arm;
+		//this.arm = arm;
 		this.cWeight = cWeight;
 		this.drive = drive;
 		this.lift = lift;
@@ -38,18 +38,18 @@ public class TelopInputManager extends AbstractInputManager {
 		//this.addButtonAction(1, 5, this::fwd2Rev, false);
 		//this.addButtonAction(1, 4, this::back2Rev, false);
 		
-		this.addBiAxisAction(
-				2, XBOX_AXIS_LX, // xbox left x
-				2, XBOX_AXIS_RX, // xbox right x
-				this::armsSetEffort, false);
-		this.addButtonAction(2, XBOX_BUTTON_A, // xbox A
-				this::leftPIDMoveStart, false);
-		this.addButtonAction(2, XBOX_BUTTON_B, // xbox B
-				this::rightPIDMoveStart, false);
-		this.addButtonAction(2, XBOX_BUTTON_X, // xbox X
-				arm::LeftPidStop, false);
-		this.addButtonAction(2, XBOX_BUTTON_Y, // xbox Y
-				arm::RightPidStop, false);
+//		this.addBiAxisAction(
+//				2, XBOX_AXIS_LX, // xbox left x
+//				2, XBOX_AXIS_RX, // xbox right x
+//				this::armsSetEffort, false);
+//		this.addButtonAction(2, XBOX_BUTTON_A, // xbox A
+//				this::leftPIDMoveStart, false);
+//		this.addButtonAction(2, XBOX_BUTTON_B, // xbox B
+//				this::rightPIDMoveStart, false);
+//		this.addButtonAction(2, XBOX_BUTTON_X, // xbox X
+//				arm::LeftPidStop, false);
+//		this.addButtonAction(2, XBOX_BUTTON_Y, // xbox Y
+//				arm::RightPidStop, false);
 		this.addBiAxisAction(
 				2, XBOX_AXIS_LTRIGGER,
 				2, XBOX_AXIS_RTRIGGER,
@@ -59,17 +59,17 @@ public class TelopInputManager extends AbstractInputManager {
 		this.addButtonAction(2, XBOX_BUTTON_BACK, lift::PidStop, false);
 	}
 	
-	private void armsSetEffort(double left, double right) {
-		arm.setEffort(-left, right);
-	}
-	
-	private void leftPIDMoveStart() {
-		arm.LeftPidMoveStart(90);
-	}
-	
-	private void rightPIDMoveStart() {
-		arm.RightPidMoveStart(90);
-	}
+//	private void armsSetEffort(double left, double right) {
+//		arm.setEffort(-left, right);
+//	}
+//	
+//	private void leftPIDMoveStart() {
+//		arm.LeftPidMoveStart(90);
+//	}
+//	
+//	private void rightPIDMoveStart() {
+//		arm.RightPidMoveStart(90);
+//	}
 	
 	private void fwd2Rev() {
 		drive.PidMoveStart(2);
