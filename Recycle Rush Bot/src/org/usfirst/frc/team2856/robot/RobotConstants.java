@@ -200,4 +200,9 @@ public class RobotConstants {
 		CWEIGHT_HOMING_OUT = 0.25,
 		CWEIGHT_HOMING_IN = 0.25;
 	
+	
+	public static final int
+		ROLLERS_SC_LEFT_CHANNEL = 9,
+		ROLLERS_SC_RIGHT_CHANNEL = 10,
+		ROLLERS_SC_CENTER_CHANNEL = 11;
 }
