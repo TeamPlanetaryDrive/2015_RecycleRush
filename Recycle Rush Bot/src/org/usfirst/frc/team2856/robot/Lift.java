@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -128,7 +129,7 @@ public class Lift {
 		pid.reset();
 
         // Set encoders to output position to PID controller
-		encoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+		encoder.setPIDSourceType(PIDSourceType.kDisplacement);
 
 		// Set PID parameters
 		pid.setPID(Kp, Ki, Kd);

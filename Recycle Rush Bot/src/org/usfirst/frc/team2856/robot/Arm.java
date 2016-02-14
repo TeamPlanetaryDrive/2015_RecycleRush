@@ -1,7 +1,7 @@
 package org.usfirst.frc.team2856.robot;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -19,7 +19,7 @@ public class Arm {
 	private MoveRefGen leftRefGen;
 	private boolean leftMoveActive;
 	private double leftStartPos;
-	private DigitalInput leftLimit;
+//	private DigitalInput leftLimit;
 	
 	// Right arm
 	private AnalogPotentiometer rightPot;
@@ -28,7 +28,7 @@ public class Arm {
 	private MoveRefGen rightRefGen;
 	private boolean rightMoveActive;
 	private double rightStartPos;
-	private DigitalInput rightLimit;
+//	private DigitalInput rightLimit;
 	
 	// Other variables
 	private double smallNumber;
@@ -45,7 +45,7 @@ public class Arm {
 		leftPID = new PIDController(0, 0, 0, leftPot, leftMotor, RobotConstants.ARM_PID_PERIOD);
 		leftRefGen = new MoveRefGen();
 		leftMoveActive = false;
-		leftLimit = new DigitalInput(RobotConstants.ARM_LIMIT_LEFT_CHANNEL);
+//		leftLimit = new DigitalInput(RobotConstants.ARM_LIMIT_LEFT_CHANNEL);
 
 		// Right arm
 		rightPot = new AnalogPotentiometer(RobotConstants.ARM_POT_RIGHT_CHANNEL, RobotConstants.ARM_POT_RIGHT_RANGE, RobotConstants.ARM_POT_RIGHT_OFFSET);
@@ -53,7 +53,7 @@ public class Arm {
 		rightPID = new PIDController(0, 0, 0, rightPot, rightMotor, RobotConstants.ARM_PID_PERIOD);
 		rightRefGen = new MoveRefGen();
 		rightMoveActive = false;
-		rightLimit = new DigitalInput(RobotConstants.ARM_LIMIT_RIGHT_CHANNEL);
+//		rightLimit = new DigitalInput(RobotConstants.ARM_LIMIT_RIGHT_CHANNEL);
 
 		// Set PID output range
 		leftPID.setOutputRange (-RobotConstants.ARM_PID_EFFORT_MAX, RobotConstants.ARM_PID_EFFORT_MAX);
@@ -99,11 +99,11 @@ public class Arm {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("Arm.Kp");
-		Ki = table.getNumber("Arm.Ki");
-		Kd = table.getNumber("Arm.Kd");
-		accelRate = table.getNumber("Arm.AccelRate");
-		maxSpeed = table.getNumber("Arm.MaxSpeed");
+		Kp = table.getNumber("Arm.Kp", RobotConstants.ARM_PID_KP);
+		Ki = table.getNumber("Arm.Ki", RobotConstants.ARM_PID_KI);
+		Kd = table.getNumber("Arm.Kd", RobotConstants.ARM_PID_KD);
+		accelRate = table.getNumber("Arm.AccelRate", RobotConstants.ARM_ACCEL_RATE);
+		maxSpeed = table.getNumber("Arm.MaxSpeed", RobotConstants.ARM_SPEED_MAX);
 
 		// Reset PID controller
 		leftPID.reset();
@@ -132,11 +132,11 @@ public class Arm {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("Arm.Kp");
-		Ki = table.getNumber("Arm.Ki");
-		Kd = table.getNumber("Arm.Kd");
-		accelRate = table.getNumber("Arm.AccelRate");
-		maxSpeed = table.getNumber("Arm.MaxSpeed");
+		Kp = table.getNumber("Arm.Kp", RobotConstants.ARM_PID_KP);
+		Ki = table.getNumber("Arm.Ki", RobotConstants.ARM_PID_KI);
+		Kd = table.getNumber("Arm.Kd", RobotConstants.ARM_PID_KD);
+		accelRate = table.getNumber("Arm.AccelRate", RobotConstants.ARM_ACCEL_RATE);
+		maxSpeed = table.getNumber("Arm.MaxSpeed", RobotConstants.ARM_SPEED_MAX);
 
 		// Reset PID controllers
 		rightPID.reset();

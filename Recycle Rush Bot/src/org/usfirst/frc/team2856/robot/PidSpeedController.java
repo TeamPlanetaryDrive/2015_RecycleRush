@@ -32,7 +32,15 @@ public class PidSpeedController implements SpeedController {
 			motorInstance.set(effort);
 		}
 	}
+	
+	public void setInverted(boolean isInverted) {
+		motorInstance.setInverted(isInverted);
+	}
 
+	public boolean getInverted() {
+		return motorInstance.getInverted();
+	}
+	
 	public void disable() {
 		if (pidInstance.isEnable())
 		{
@@ -41,6 +49,10 @@ public class PidSpeedController implements SpeedController {
 		motorInstance.disable();
 	}
 
+	public void stopMotor() {
+		disable();
+	}
+	
 	public void pidWrite(double output) {
 		motorInstance.pidWrite(output);
 	}

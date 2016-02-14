@@ -1,10 +1,10 @@
 package org.usfirst.frc.team2856.robot;
 
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -43,7 +43,7 @@ public class Drive {
 	private RobotDrive rDrive;
 	
 	// Gyro
-	private Gyro gyro;
+	private AnalogGyro gyro;
 	private boolean gyroActive;
 
 	// Other variables
@@ -85,7 +85,7 @@ public class Drive {
 		rDrive = new RobotDrive(frontLeftPidSpeed, rearLeftPidSpeed, frontRightPidSpeed, rearRightPidSpeed);
 		
 		// Gyro
-		gyro = new Gyro(RobotConstants.DT_GYRO_CHANNEL);
+		gyro = new AnalogGyro(RobotConstants.DT_GYRO_CHANNEL);
 		gyroActive = false;
 		
 		// Set encoder resolution
@@ -181,11 +181,11 @@ public class Drive {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("DT.Pos.Kp");
-		Ki = table.getNumber("DT.Pos.Ki");
-		Kd = table.getNumber("DT.Pos.Kd");
-		accelRate = table.getNumber("DT.AccelRate");
-		maxSpeed = table.getNumber("DT.MaxSpeed");
+		Kp = table.getNumber("DT.Pos.Kp", RobotConstants.DT_PID_POSITION_KP);
+		Ki = table.getNumber("DT.Pos.Ki", RobotConstants.DT_PID_POSITION_KI);
+		Kd = table.getNumber("DT.Pos.Kd", RobotConstants.DT_PID_POSITION_KD);
+		accelRate = table.getNumber("DT.AccelRate", RobotConstants.DT_ACCEL_RATE);
+		maxSpeed = table.getNumber("DT.MaxSpeed", RobotConstants.DT_SPEED_MAX);
 
 		// Reset PID controllers
 		frontLeftPID.reset();
@@ -200,10 +200,10 @@ public class Drive {
         rearRightEncoder.reset();
 
         // Set encoders to output position to PID controllers
-		frontLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		rearLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		frontRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		rearRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+		frontLeftEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
+		rearLeftEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
+		frontRightEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
+		rearRightEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
 
 		// Set PID parameters
 		frontLeftPID.setPID(Kp, Ki, Kd);
@@ -237,10 +237,10 @@ public class Drive {
 		double maxSpeed;
 		
 		// Update local parameters
-		Kp = table.getNumber("DT.Spd.Kp");
-		Ki = table.getNumber("DT.Spd.Ki");
-		Kd = table.getNumber("DT.Spd.Kd");
-		maxSpeed = table.getNumber("DT.MaxSpeed");
+		Kp = table.getNumber("DT.Spd.Kp", RobotConstants.DT_PID_SPEED_KP);
+		Ki = table.getNumber("DT.Spd.Ki", RobotConstants.DT_PID_SPEED_KI);
+		Kd = table.getNumber("DT.Spd.Kd", RobotConstants.DT_PID_SPEED_KD);
+		maxSpeed = table.getNumber("DT.MaxSpeed", RobotConstants.DT_SPEED_MAX);
 
 		// Reset PID controllers
 		frontLeftPID.reset();
@@ -249,10 +249,10 @@ public class Drive {
 		rearRightPID.reset();
 
 		// Set encoders to output speed to PID controllers
-		frontLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		rearLeftEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		frontRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		rearRightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
+		frontLeftEncoder.setPIDSourceType(PIDSourceType.kRate);
+		rearLeftEncoder.setPIDSourceType(PIDSourceType.kRate);
+		frontRightEncoder.setPIDSourceType(PIDSourceType.kRate);
+		rearRightEncoder.setPIDSourceType(PIDSourceType.kRate);
 
 		// Set maximum speed
 		frontLeftPidSpeed.setMaxSpeed(maxSpeed);
