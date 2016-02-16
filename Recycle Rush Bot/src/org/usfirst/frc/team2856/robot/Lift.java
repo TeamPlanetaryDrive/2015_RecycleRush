@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -119,11 +118,11 @@ public class Lift {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("Lift.Kp");
-		Ki = table.getNumber("Lift.Ki");
-		Kd = table.getNumber("Lift.Kd");
-		accelRate = table.getNumber("Lift.AccelRate");
-		maxSpeed = table.getNumber("Lift.MaxSpeed");
+		Kp = table.getNumber("Lift.Kp", RobotConstants.LIFT_PID_KP);
+		Ki = table.getNumber("Lift.Ki", RobotConstants.LIFT_PID_KI);
+		Kd = table.getNumber("Lift.Kd", RobotConstants.LIFT_PID_KD);
+		accelRate = table.getNumber("Lift.AccelRate", RobotConstants.LIFT_ACCEL_RATE);
+		maxSpeed = table.getNumber("Lift.MaxSpeed", RobotConstants.LIFT_SPEED_MAX);
 
 		// Reset PID controller
 		pid.reset();

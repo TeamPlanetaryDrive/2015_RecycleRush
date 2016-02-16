@@ -23,7 +23,7 @@ public class PidSpeedController implements SpeedController {
 	}
 
 	public void set(double effort) {
-		if (pidInstance.isEnable())
+		if (pidInstance.isEnabled())
 		{
 			pidInstance.setSetpoint(effort * maxSpeed);
 		}
@@ -42,7 +42,7 @@ public class PidSpeedController implements SpeedController {
 	}
 	
 	public void disable() {
-		if (pidInstance.isEnable())
+		if (pidInstance.isEnabled())
 		{
 			pidInstance.disable();
 		}

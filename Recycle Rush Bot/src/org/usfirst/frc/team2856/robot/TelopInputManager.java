@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class TelopInputManager extends AbstractInputManager {
 	//private Arm arm;
-	private CounterWeight cWeight;
-	private Drive drive;
+	//private CounterWeight cWeight;
+//	private Drive drive;
 	private Lift lift;
-	private Pivot pivot;
+	//private Pivot pivot;
 
 	public TelopInputManager(/*Arm arm, */CounterWeight cWeight, Drive drive, Lift lift, Pivot pivot) {
 		super(new Joystick(RobotConstants.IM_JOYSTICK_LEFT),    // left = 0
@@ -15,10 +15,10 @@ public class TelopInputManager extends AbstractInputManager {
 				new Joystick(RobotConstants.IM_XBOX_CONTROLLER)); // xbox = 2
 		
 		//this.arm = arm;
-		this.cWeight = cWeight;
-		this.drive = drive;
+		//this.cWeight = cWeight;
+//		this.drive = drive;
 		this.lift = lift;
-		this.pivot = pivot;
+		//this.pivot = pivot;
 		
 		this.addTriAxisAction(
 				1, ATTACK3_AXIS_X, // right x
@@ -71,13 +71,13 @@ public class TelopInputManager extends AbstractInputManager {
 //		arm.RightPidMoveStart(90);
 //	}
 	
-	private void fwd2Rev() {
-		drive.PidMoveStart(2);
-	}
+//	private void fwd2Rev() {
+//		drive.PidMoveStart(2);
+//	}
 	
-	private void back2Rev() {
-		drive.PidMoveStart(-2);
-	}
+//	private void back2Rev() {
+//		drive.PidMoveStart(-2);
+//	}
 	
 	private Runnable liftMove(int num) {
 		return () -> { lift.PidMoveStart(num); };

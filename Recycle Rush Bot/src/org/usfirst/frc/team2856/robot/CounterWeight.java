@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -119,11 +118,11 @@ public class CounterWeight {
 		double maxSpeed;
 
 		// Update local parameters
-		Kp = table.getNumber("Arm.Kp");
-		Ki = table.getNumber("Arm.Ki");
-		Kd = table.getNumber("Arm.Kd");
-		accelRate = table.getNumber("Arm.AccelRate");
-		maxSpeed = table.getNumber("Arm.MaxSpeed");
+		Kp = table.getNumber("Arm.Kp", RobotConstants.ARM_PID_KP);
+		Ki = table.getNumber("Arm.Ki", RobotConstants.ARM_PID_KI);
+		Kd = table.getNumber("Arm.Kd", RobotConstants.ARM_PID_KD);
+		accelRate = table.getNumber("Arm.AccelRate", RobotConstants.ARM_ACCEL_RATE);
+		maxSpeed = table.getNumber("Arm.MaxSpeed", RobotConstants.ARM_SPEED_MAX);
 
 		// Reset PID controller
 		pid.reset();
